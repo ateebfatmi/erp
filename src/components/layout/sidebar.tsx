@@ -44,6 +44,7 @@ import {
   Percent,
   ShieldCheck,
   Network,
+  Languages,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -121,6 +122,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'Stream & Career Pathways', href: '/portal/student/career', icon: Compass },
           { label: 'Alumni Mentorship', href: '/portal/student/alumni', icon: GraduationCap },
           { label: 'House Championship', href: '/portal/student/activities', icon: Trophy },
+          { label: 'EBSB & Bhasha Sangam', href: '/portal/student/ebsb', icon: Languages },
           { label: '10 Bagless Days', href: '/portal/student/bagless-days', icon: Sparkles },
           { label: 'Digital Library', href: '/portal/student/library', icon: Library },
           { label: 'My Health Card', href: '/portal/student/health', icon: HeartPulse },
@@ -165,6 +167,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'Campus Facility Desk', href: '/portal/admin/facilities', icon: Layers },
           { label: 'Campus Canteen POS', href: '/portal/admin/canteen', icon: UtensilsCrossed },
           { label: 'House Activities', href: '/portal/admin/activities', icon: Trophy },
+          { label: 'EBSB & Bhasha Sangam', href: '/portal/admin/activities/ebsb', icon: Languages },
           { label: 'Sahodaya & Competitions', href: '/portal/admin/activities/sahodaya', icon: Award },
           { label: 'Hubs of Learning (HoL)', href: '/portal/admin/academics/hubs-of-learning', icon: Network },
           { label: 'Staff & HRIS', href: '/portal/admin/staff', icon: Briefcase },

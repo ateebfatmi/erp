@@ -23,6 +23,13 @@ export default function AdminActivitiesPage() {
           <Badge className="bg-amber-100 text-amber-800 border-amber-200">
             4-House Statutory System
           </Badge>
+          <Link href="/portal/admin/activities/ebsb">
+            <Button size="sm" variant="outline" className="text-xs flex items-center gap-1.5 border-emerald-200 text-emerald-700 hover:bg-emerald-50">
+              <Award className="h-3.5 w-3.5" />
+              EBSB & Bhasha Sangam
+              <ArrowRight className="h-3 w-3" />
+            </Button>
+          </Link>
           <Link href="/portal/admin/activities/sahodaya">
             <Button size="sm" variant="outline" className="text-xs flex items-center gap-1.5 border-blue-200 text-blue-700 hover:bg-blue-50">
               <Award className="h-3.5 w-3.5" />
