@@ -1,11 +1,10 @@
 import React from 'react';
-import { DoorOpen } from 'lucide-react';
-import { GatepassManager } from '@/components/modules/security/gatepass-manager';
+import { AdminSecurityDesk } from '@/components/modules/security/admin-security-desk';
 
 export default function AdminSecurityPage() {
   return (
     <div className="space-y-6">
-      <GatepassManager />
+      <AdminSecurityDesk />
     </div>
   );
 }

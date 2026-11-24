@@ -17,6 +17,7 @@ import {
   PlusCircle,
   Flag,
   Timer,
+  Vote,
 } from 'lucide-react';
 import {
   HouseName,
@@ -28,6 +29,7 @@ import {
   recordEventResult,
 } from '@/modules/activities/house-system';
 import { SportsMeetManager } from './sports-meet-manager';
+import { StudentCouncilManager } from './student-council-manager';
 
 interface Props {
   role?: 'admin' | 'student';
@@ -42,7 +44,7 @@ export function HouseManager({ role = 'admin' }: Props) {
   const [thirdHouse, setThirdHouse] = useState<HouseName>('SHIVAJI');
   const [honoreeText, setHonoreeText] = useState('');
   const [feedback, setFeedback] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'cock-house' | 'sports-day'>('cock-house');
+  const [activeTab, setActiveTab] = useState<'cock-house' | 'sports-day' | 'student-council'>('cock-house');
 
   const standings = calculateMedalStandings(tallies);
 
@@ -110,10 +112,28 @@ export function HouseManager({ role = 'admin' }: Props) {
             Olympic Track
           </span>
         </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('student-council')}
+          className={`pb-3 px-4 text-xs font-semibold flex items-center gap-2 border-b-2 transition-colors cursor-pointer ${
+            activeTab === 'student-council'
+              ? 'border-purple-600 text-purple-800'
+              : 'border-transparent text-slate-500 hover:text-slate-700'
+          }`}
+        >
+          <Vote className="h-4 w-4" />
+          Student Council Elections
+          <span className="bg-purple-100 text-purple-800 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+            Digital Ballot
+          </span>
+        </button>
       </div>
 
       {activeTab === 'sports-day' ? (
         <SportsMeetManager role={role} />
+      ) : activeTab === 'student-council' ? (
+        <StudentCouncilManager role={role} />
       ) : (
         <>
           {/* Toast Feedback */}
