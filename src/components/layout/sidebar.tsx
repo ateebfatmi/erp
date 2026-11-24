@@ -40,6 +40,7 @@ import {
   Gauge,
   ShoppingBag,
   Scale,
+  Fingerprint,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -80,6 +81,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'My Payslips & Tax', href: '/portal/teacher/payroll', icon: CreditCard },
           { label: 'PTM Consultations', href: '/portal/teacher/ptm', icon: Users },
           { label: 'My Timetable', href: '/portal/teacher/timetable', icon: Calendar },
+          { label: 'My Biometric Clock-In', href: '/portal/teacher/my-attendance', icon: Fingerprint },
           { label: 'Academic Calendar', href: '/portal/teacher/calendar', icon: Calendar },
         ];
 
@@ -152,6 +154,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'Campus Canteen POS', href: '/portal/admin/canteen', icon: UtensilsCrossed },
           { label: 'House Activities', href: '/portal/admin/activities', icon: Trophy },
           { label: 'Staff & HRIS', href: '/portal/admin/staff', icon: Briefcase },
+          { label: 'Faculty Biometric Muster', href: '/portal/admin/staff/attendance', icon: Fingerprint },
           { label: 'Teacher CPD (50-Hr)', href: '/portal/admin/staff/cpd', icon: Award },
           { label: 'Transport Fleet', href: '/portal/admin/transport', icon: Bus },
           { label: 'Bus Routes & Stops', href: '/portal/admin/transport/routes', icon: MapPin },
