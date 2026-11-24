@@ -39,6 +39,7 @@ import {
   HeartHandshake,
   Gauge,
   ShoppingBag,
+  Scale,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -79,6 +80,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'My Payslips & Tax', href: '/portal/teacher/payroll', icon: CreditCard },
           { label: 'PTM Consultations', href: '/portal/teacher/ptm', icon: Users },
           { label: 'My Timetable', href: '/portal/teacher/timetable', icon: Calendar },
+          { label: 'Academic Calendar', href: '/portal/teacher/calendar', icon: Calendar },
         ];
 
       case 'parent':
@@ -91,6 +93,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'Report Cards', href: '/portal/parent/reports', icon: BookOpen },
           { label: 'Exam Admit Card', href: '/portal/parent/admit-card', icon: FileText },
           { label: 'Bookstore & Uniform Kits', href: '/portal/parent/store', icon: ShoppingBag },
+          { label: 'Academic Calendar', href: '/portal/parent/calendar', icon: Calendar },
           { label: 'Live Bus Tracking', href: '/portal/parent/transport', icon: Bus },
           { label: 'Smart Canteen', href: '/portal/parent/canteen', icon: UtensilsCrossed },
           { label: 'Health & Medical', href: '/portal/parent/health', icon: HeartPulse },
@@ -116,6 +119,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'My Health Card', href: '/portal/student/health', icon: HeartPulse },
           { label: 'Digital Student ID', href: '/portal/student/id-card', icon: CreditCard },
           { label: 'Circulars & Dates', href: '/portal/student/notices', icon: Bell },
+          { label: 'Academic Calendar', href: '/portal/student/calendar', icon: Calendar },
           { label: 'Attendance Record', href: '/portal/student/attendance', icon: CalendarCheck },
         ];
 
@@ -129,6 +133,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'No-Dues Clearance', href: '/portal/admin/students/clearance', icon: CheckCircle2 },
           { label: 'Certificates & Documents', href: '/portal/admin/documents', icon: Award },
           { label: 'Admissions Desk', href: '/portal/admin/admissions', icon: UserCheck },
+          { label: 'RTE 25% EWS Quota', href: '/portal/admin/admissions/rte', icon: Scale },
           { label: 'Attendance Hub', href: '/portal/admin/attendance', icon: CalendarCheck },
           { label: 'Fees & Collections', href: '/portal/admin/fees', icon: CreditCard },
           { label: 'Exams & Grading', href: '/portal/admin/exams', icon: BookOpen },
@@ -138,6 +143,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'Syllabus Oversight', href: '/portal/admin/syllabus', icon: BookOpen },
           { label: 'Teaching Diaries', href: '/portal/admin/academics/diary', icon: BookOpen },
           { label: 'Master Timetable', href: '/portal/admin/timetable', icon: Calendar },
+          { label: 'Academic Calendar (220-Day)', href: '/portal/admin/calendar', icon: Calendar },
           { label: 'Arrangement Matrix', href: '/portal/admin/staff/substitution', icon: Sparkles },
           { label: 'Health & Infirmary', href: '/portal/admin/health', icon: HeartPulse },
           { label: 'Campus Gate Security', href: '/portal/admin/security', icon: ShieldAlert },
