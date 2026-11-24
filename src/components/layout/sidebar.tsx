@@ -27,6 +27,7 @@ import {
   ClipboardList,
   HeartPulse,
   CheckCircle2,
+  Bed,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -57,6 +58,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'Gradebook & Marks', href: '/portal/teacher/marks', icon: BookOpen },
           { label: 'Homework & Tasks', href: '/portal/teacher/homework', icon: FileText },
           { label: 'Syllabus Tracker', href: '/portal/teacher/syllabus', icon: ClipboardList },
+          { label: 'Faculty Leaves', href: '/portal/teacher/leave', icon: Briefcase },
           { label: 'PTM Consultations', href: '/portal/teacher/ptm', icon: Users },
           { label: 'My Timetable', href: '/portal/teacher/timetable', icon: Calendar },
         ];
@@ -67,6 +69,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'Fee Payments', href: '/portal/parent/fees', icon: CreditCard },
           { label: 'Attendance History', href: '/portal/parent/attendance', icon: CalendarCheck },
           { label: 'Report Cards', href: '/portal/parent/reports', icon: BookOpen },
+          { label: 'Live Bus Tracking', href: '/portal/parent/transport', icon: Bus },
           { label: 'PTM Slot Booking', href: '/portal/parent/ptm', icon: Users },
           { label: 'Circulars & Notices', href: '/portal/parent/notices', icon: Bell },
           { label: 'Daily Timetable', href: '/portal/parent/timetable', icon: Calendar },
@@ -94,12 +97,15 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'Exams & Grading', href: '/portal/admin/exams', icon: BookOpen },
           { label: 'Syllabus Oversight', href: '/portal/admin/syllabus', icon: BookOpen },
           { label: 'Master Timetable', href: '/portal/admin/timetable', icon: Calendar },
+          { label: 'Arrangement Matrix', href: '/portal/admin/staff/substitution', icon: Sparkles },
           { label: 'Health & Infirmary', href: '/portal/admin/health', icon: HeartPulse },
           { label: 'Campus Gate Security', href: '/portal/admin/security', icon: ShieldAlert },
+          { label: 'Hostel & Residence', href: '/portal/admin/hostel', icon: Bed },
           { label: 'Staff & HRIS', href: '/portal/admin/staff', icon: Briefcase },
           { label: 'Transport Fleet', href: '/portal/admin/transport', icon: Bus },
           { label: 'Library Catalog', href: '/portal/admin/library', icon: Library },
           { label: 'Inventory & Assets', href: '/portal/admin/inventory', icon: Boxes },
+          { label: 'Alumni Network', href: '/portal/admin/alumni', icon: GraduationCap },
           { label: 'Circulars & Notices', href: '/portal/admin/notices', icon: Bell },
           { label: 'Communication Hub', href: '/portal/admin/communication', icon: Bell },
           { label: 'Reports & Analytics', href: '/portal/admin/reports', icon: ClipboardList },
