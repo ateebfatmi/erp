@@ -16,6 +16,7 @@ import {
   Award,
   PlusCircle,
   Flag,
+  Timer,
 } from 'lucide-react';
 import {
   HouseName,
@@ -26,6 +27,7 @@ import {
   calculateMedalStandings,
   recordEventResult,
 } from '@/modules/activities/house-system';
+import { SportsMeetManager } from './sports-meet-manager';
 
 interface Props {
   role?: 'admin' | 'student';
@@ -40,6 +42,7 @@ export function HouseManager({ role = 'admin' }: Props) {
   const [thirdHouse, setThirdHouse] = useState<HouseName>('SHIVAJI');
   const [honoreeText, setHonoreeText] = useState('');
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'cock-house' | 'sports-day'>('cock-house');
 
   const standings = calculateMedalStandings(tallies);
 
@@ -77,21 +80,57 @@ export function HouseManager({ role = 'admin' }: Props) {
 
   return (
     <div className="space-y-6">
-      {/* Toast Feedback */}
-      {feedback && (
-        <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-sm flex items-center justify-between shadow-xs animate-in fade-in duration-200">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0" />
-            <span>{feedback}</span>
-          </div>
-          <button
-            onClick={() => setFeedback(null)}
-            className="text-xs text-emerald-600 hover:text-emerald-900 font-semibold"
-          >
-            Dismiss
-          </button>
-        </div>
-      )}
+      {/* Navigation Tabs */}
+      <div className="flex border-b border-slate-200 gap-2">
+        <button
+          type="button"
+          onClick={() => setActiveTab('cock-house')}
+          className={`pb-3 px-4 text-xs font-semibold flex items-center gap-2 border-b-2 transition-colors cursor-pointer ${
+            activeTab === 'cock-house'
+              ? 'border-amber-600 text-amber-800'
+              : 'border-transparent text-slate-500 hover:text-slate-700'
+          }`}
+        >
+          <Trophy className="h-4 w-4" />
+          Cock House Championship & Co-Curricular Roster
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('sports-day')}
+          className={`pb-3 px-4 text-xs font-semibold flex items-center gap-2 border-b-2 transition-colors cursor-pointer ${
+            activeTab === 'sports-day'
+              ? 'border-blue-600 text-blue-800'
+              : 'border-transparent text-slate-500 hover:text-slate-700'
+          }`}
+        >
+          <Timer className="h-4 w-4" />
+          Annual Sports Day & 8-Lane Track Heats
+          <span className="bg-blue-100 text-blue-800 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+            Olympic Track
+          </span>
+        </button>
+      </div>
+
+      {activeTab === 'sports-day' ? (
+        <SportsMeetManager role={role} />
+      ) : (
+        <>
+          {/* Toast Feedback */}
+          {feedback && (
+            <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-sm flex items-center justify-between shadow-xs animate-in fade-in duration-200">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0" />
+                <span>{feedback}</span>
+              </div>
+              <button
+                onClick={() => setFeedback(null)}
+                className="text-xs text-emerald-600 hover:text-emerald-900 font-semibold"
+              >
+                Dismiss
+              </button>
+            </div>
+          )}
 
       {/* Student Personal House Banner */}
       {role === 'student' && (
@@ -382,6 +421,8 @@ export function HouseManager({ role = 'admin' }: Props) {
             </CardContent>
           </Card>
         </div>
+      )}
+        </>
       )}
     </div>
   );

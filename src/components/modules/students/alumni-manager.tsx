@@ -21,20 +21,25 @@ import {
   Download,
   PlusCircle,
   ExternalLink,
+  Video,
 } from 'lucide-react';
 import {
   AlumniProfile,
   TranscriptRequest,
+  MentorshipSessionRequest,
   INITIAL_ALUMNI_ROSTER,
   INITIAL_TRANSCRIPT_REQUESTS,
+  INITIAL_MENTORSHIP_SESSIONS,
   filterAlumniDirectory,
   generateVerificationBarcode,
+  updateMentorshipStatus,
 } from '@/modules/students/alumni';
 
 export function AlumniManager() {
   const [alumni, setAlumni] = useState<AlumniProfile[]>(INITIAL_ALUMNI_ROSTER);
   const [requests, setRequests] = useState<TranscriptRequest[]>(INITIAL_TRANSCRIPT_REQUESTS);
-  const [activeTab, setActiveTab] = useState<'directory' | 'transcripts' | 'newAlumni'>('directory');
+  const [sessions, setSessions] = useState<MentorshipSessionRequest[]>(INITIAL_MENTORSHIP_SESSIONS);
+  const [activeTab, setActiveTab] = useState<'directory' | 'transcripts' | 'mentorship' | 'newAlumni'>('directory');
   const [searchQuery, setSearchQuery] = useState('');
   const [batchYear, setBatchYear] = useState<number | 'ALL'>('ALL');
   const [streamFilter, setStreamFilter] = useState<string>('ALL');
@@ -204,6 +209,16 @@ export function AlumniManager() {
           >
             <FileCheck className="h-3.5 w-3.5" />
             Official Transcripts & WES Desk ({requests.length})
+          </Button>
+
+          <Button
+            variant={activeTab === 'mentorship' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setActiveTab('mentorship')}
+            className="text-xs h-8 flex items-center gap-1.5"
+          >
+            <Video className="h-3.5 w-3.5" />
+            Career Mentorship ({sessions.length})
           </Button>
 
           <Button
@@ -404,6 +419,116 @@ export function AlumniManager() {
                           </Button>
                         ) : (
                           <span className="text-slate-400 font-mono text-[11px]">Dispatched</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* TAB: MENTORSHIP OVERSIGHT */}
+      {activeTab === 'mentorship' && (
+        <Card className="border-slate-200">
+          <CardHeader className="p-4 border-b border-slate-200">
+            <CardTitle className="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <Video className="h-4 w-4 text-blue-600" />
+              1:1 Student-Alumni Career Mentorship Sessions
+            </CardTitle>
+            <CardDescription className="text-xs text-slate-500">
+              Oversight of career guidance, exam roadmaps (JEE, NEET, CLAT, UPSC), and university counseling consultations.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs text-left">
+                <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
+                  <tr>
+                    <th className="py-2.5 px-3">Session Ref</th>
+                    <th className="py-2.5 px-3">Student</th>
+                    <th className="py-2.5 px-3">Alumni Mentor</th>
+                    <th className="py-2.5 px-3">Domain & Slot</th>
+                    <th className="py-2.5 px-3">Purpose & Discussion Topic</th>
+                    <th className="py-2.5 px-3">Status</th>
+                    <th className="py-2.5 px-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {sessions.map((sess) => (
+                    <tr key={sess.id} className="hover:bg-slate-50/70">
+                      <td className="py-3 px-3 font-mono font-bold text-blue-600">
+                        {sess.id}
+                        <span className="block text-[10px] text-slate-400 font-normal">
+                          {sess.requestDate}
+                        </span>
+                      </td>
+                      <td className="py-3 px-3">
+                        <span className="font-bold text-slate-900 block">{sess.studentName}</span>
+                        <span className="text-[11px] text-slate-500">
+                          {sess.studentAdmissionNo} &bull; {sess.studentGrade}
+                        </span>
+                      </td>
+                      <td className="py-3 px-3">
+                        <span className="font-bold text-slate-900 block">{sess.alumniName}</span>
+                        <span className="text-[11px] text-slate-500">
+                          {alumni.find((a) => a.id === sess.alumniId)?.currentProfession || 'Distinguished Alumni'}
+                        </span>
+                      </td>
+                      <td className="py-3 px-3">
+                        <Badge variant="outline" className="text-[10px] mb-1">
+                          {sess.targetDomain}
+                        </Badge>
+                        <span className="block text-[11px] text-slate-600 font-medium">
+                          {sess.preferredSlot}
+                        </span>
+                      </td>
+                      <td className="py-3 px-3 max-w-xs">
+                        <p className="text-slate-600 line-clamp-2 text-[11px]">
+                          {sess.statementOfPurpose}
+                        </p>
+                      </td>
+                      <td className="py-3 px-3">
+                        <Badge
+                          variant={sess.status === 'CONFIRMED' ? 'success' : 'outline'}
+                          className="text-[10px]"
+                        >
+                          {sess.status}
+                        </Badge>
+                      </td>
+                      <td className="py-3 px-3 text-right">
+                        {sess.status === 'CONFIRMED' ? (
+                          <div className="flex items-center justify-end gap-1.5">
+                            {sess.meetingUrl && (
+                              <a href={sess.meetingUrl} target="_blank" rel="noreferrer">
+                                <Button size="sm" variant="outline" className="h-7 text-[10px] gap-1 cursor-pointer">
+                                  <Video className="h-3 w-3" /> Meet
+                                </Button>
+                              </a>
+                            )}
+                            <Button
+                              size="sm"
+                              onClick={() => {
+                                setSessions((prev) =>
+                                  updateMentorshipStatus(
+                                    prev,
+                                    sess.id,
+                                    'COMPLETED',
+                                    'Session verified by academic counselor.'
+                                  )
+                                );
+                                setFeedback(`Session ${sess.id} marked as COMPLETED.`);
+                                setTimeout(() => setFeedback(null), 3000);
+                              }}
+                              className="h-7 text-[10px] bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
+                            >
+                              Conclude
+                            </Button>
+                          </div>
+                        ) : (
+                          <span className="text-slate-400 font-mono text-[10px]">Archived</span>
                         )}
                       </td>
                     </tr>

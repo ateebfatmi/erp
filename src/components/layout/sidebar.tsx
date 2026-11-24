@@ -102,6 +102,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'Exam Results', href: '/portal/student/results', icon: BookOpen },
           { label: '360° Holistic Card (HPC)', href: '/portal/student/hpc', icon: Sparkles },
           { label: 'Stream & Career Pathways', href: '/portal/student/career', icon: Compass },
+          { label: 'Alumni Mentorship', href: '/portal/student/alumni', icon: GraduationCap },
           { label: 'House Championship', href: '/portal/student/activities', icon: Trophy },
           { label: 'Digital Library', href: '/portal/student/library', icon: Library },
           { label: 'My Health Card', href: '/portal/student/health', icon: HeartPulse },
