@@ -36,6 +36,8 @@ import {
   Award,
   Compass,
   MapPin,
+  HeartHandshake,
+  Gauge,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -107,6 +109,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'House Championship', href: '/portal/student/activities', icon: Trophy },
           { label: 'Digital Library', href: '/portal/student/library', icon: Library },
           { label: 'My Health Card', href: '/portal/student/health', icon: HeartPulse },
+          { label: 'Digital Student ID', href: '/portal/student/id-card', icon: CreditCard },
           { label: 'Circulars & Dates', href: '/portal/student/notices', icon: Bell },
           { label: 'Attendance Record', href: '/portal/student/attendance', icon: CalendarCheck },
         ];
@@ -116,6 +119,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
         return [
           { label: 'Executive Dashboard', href: '/portal/admin', icon: LayoutDashboard },
           { label: 'Students & SIS', href: '/portal/admin/students', icon: Users },
+          { label: 'CWSN & Inclusive IEP', href: '/portal/admin/students/cwsn', icon: HeartHandshake },
           { label: 'House & Discipline', href: '/portal/admin/students/discipline', icon: Trophy },
           { label: 'No-Dues Clearance', href: '/portal/admin/students/clearance', icon: CheckCircle2 },
           { label: 'Certificates & Documents', href: '/portal/admin/documents', icon: Award },
@@ -140,6 +144,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'Transport Fleet', href: '/portal/admin/transport', icon: Bus },
           { label: 'Bus Routes & Stops', href: '/portal/admin/transport/routes', icon: MapPin },
           { label: 'Fleet Maintenance', href: '/portal/admin/transport/maintenance', icon: Wrench },
+          { label: 'Trip Sheets & Fuel', href: '/portal/admin/transport/trips', icon: Gauge },
           { label: 'Library Catalog', href: '/portal/admin/library', icon: Library },
           { label: 'Inventory & Assets', href: '/portal/admin/inventory', icon: Boxes },
           { label: 'Store Indents & Issues', href: '/portal/admin/inventory/requisition', icon: Boxes },
