@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Users, UserPlus, Search, Download, FileText, CheckCircle2, CreditCard, FileCheck } from 'lucide-react';
+import { Users, UserPlus, Search, Download, FileText, CheckCircle2, CreditCard, FileCheck, Award } from 'lucide-react';
 import { createStudentAction } from '@/modules/students/actions';
 import { formatDate } from '@/lib/utils';
 import { BulkImportModal } from '@/components/modules/students/bulk-import-modal';
@@ -127,6 +127,11 @@ export default async function StudentsPage({
                             <a href={`/api/documents/transfer-certificate/${enr.id}`} target="_blank" rel="noopener noreferrer">
                               <Button variant="outline" size="sm" className="h-7 px-2 text-[11px] gap-1 text-slate-700 hover:text-amber-600 hover:border-amber-300">
                                 <FileCheck className="h-3 w-3 text-amber-600" /> TC
+                              </Button>
+                            </a>
+                            <a href={`/api/documents/certificate/${enr.id}`} target="_blank" rel="noopener noreferrer">
+                              <Button variant="outline" size="sm" className="h-7 px-2 text-[11px] gap-1 text-slate-700 hover:text-purple-600 hover:border-purple-300">
+                                <Award className="h-3 w-3 text-purple-600" /> Certificate
                               </Button>
                             </a>
                           </div>

@@ -4,6 +4,7 @@ import {
   generateReportCardPdf,
   generateStudentIdCardPdf,
   generateTransferCertificatePdf,
+  generateMeritCertificatePdf,
 } from '../pdf-generator';
 
 describe('Document Generation Engine (pdf-lib)', () => {
@@ -114,6 +115,28 @@ describe('Document Generation Engine (pdf-lib)', () => {
       generalConduct: 'Exemplary',
       reasonForLeaving: 'Parent Transfer',
       anyOtherRemarks: 'NIL',
+    });
+
+    expect(bytes).toBeInstanceOf(Uint8Array);
+    expect(bytes.length).toBeGreaterThan(1000);
+    const header = String.fromCharCode(...bytes.slice(0, 5));
+    expect(header).toBe('%PDF-');
+  });
+
+  it('generates a valid, landscape Certificate of Merit PDF', async () => {
+    const bytes = await generateMeritCertificatePdf({
+      schoolName: 'Delhi Public Global Academy',
+      schoolAddress: 'Vasant Kunj, New Delhi',
+      affiliationNumber: '2130894',
+      certificateNumber: 'DPGA/MERIT/2026/0491',
+      issueDate: '24/11/2026',
+      studentName: 'Aarav Mehta',
+      admissionNumber: 'DPGA/2021/1042',
+      className: 'Class 10',
+      sectionName: 'A',
+      title: 'Certificate of Merit & Academic Excellence',
+      awardReason: 'For securing 1st Position with 98.4% in CBSE Mid-Term Examination',
+      achievementCategory: 'Senior Secondary Academic Distinction',
     });
 
     expect(bytes).toBeInstanceOf(Uint8Array);

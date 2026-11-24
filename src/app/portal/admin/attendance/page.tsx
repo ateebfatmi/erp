@@ -4,8 +4,9 @@ import { getVerifiedAuthContext } from '@/lib/auth/session';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { CalendarCheck, CheckCircle2, UserX, Clock, CalendarDays, Filter } from 'lucide-react';
+import { CalendarCheck, CheckCircle2, UserX, Clock, CalendarDays, Filter, Radio } from 'lucide-react';
 import { markClassAttendanceAction } from '@/modules/attendance/actions';
+import { RfidGateSimulator } from '@/components/modules/attendance/rfid-gate-simulator';
 
 export default async function AttendancePage() {
   const auth = await getVerifiedAuthContext();
@@ -70,6 +71,15 @@ export default async function AttendancePage() {
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Hardware Gate Turnstile & Biometric Stream */}
+      <div>
+        <h2 className="text-sm font-bold text-slate-800 mb-3 uppercase tracking-wide flex items-center gap-2">
+          <Radio className="h-4 w-4 text-emerald-600 animate-pulse" />
+          Physical Gate Turnstiles & Biometric RFID Stream
+        </h2>
+        <RfidGateSimulator />
       </div>
 
       {/* Attendance Sheet */}

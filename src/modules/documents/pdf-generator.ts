@@ -810,3 +810,209 @@ export async function generateSalarySlipPdf(data: SalarySlipPdfData): Promise<Ui
 
   return await pdfDoc.save();
 }
+
+export interface MeritCertificateData {
+  schoolName: string;
+  schoolAddress: string;
+  affiliationNumber: string;
+  certificateNumber: string;
+  issueDate: string;
+  studentName: string;
+  admissionNumber: string;
+  className: string;
+  sectionName: string;
+  title: string;
+  awardReason: string;
+  achievementCategory: string;
+}
+
+/**
+ * Generates an official, regal Certificate of Merit / Achievement (A4 Landscape)
+ */
+export async function generateMeritCertificatePdf(data: MeritCertificateData): Promise<Uint8Array> {
+  const pdfDoc = await PDFDocument.create();
+  const page = pdfDoc.addPage([841.89, 595.28]); // A4 Landscape
+  const { width, height } = page.getSize();
+
+  const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+  const fontRegular = await pdfDoc.embedFont(StandardFonts.Helvetica);
+
+  // Outer Deep Navy Border
+  page.drawRectangle({
+    x: 25,
+    y: 25,
+    width: width - 50,
+    height: height - 50,
+    borderColor: rgb(0.08, 0.16, 0.32),
+    borderWidth: 4,
+  });
+
+  // Inner Ornate Gold Border
+  page.drawRectangle({
+    x: 32,
+    y: 32,
+    width: width - 64,
+    height: height - 64,
+    borderColor: rgb(0.78, 0.62, 0.22), // Gold
+    borderWidth: 1.5,
+  });
+
+  // Background subtle tint
+  page.drawRectangle({
+    x: 34,
+    y: 34,
+    width: width - 68,
+    height: height - 68,
+    color: rgb(0.99, 0.99, 1.0),
+  });
+
+  // School Header
+  const schoolTitle = data.schoolName.toUpperCase();
+  const schoolTitleWidth = fontBold.widthOfTextAtSize(schoolTitle, 20);
+  page.drawText(schoolTitle, {
+    x: (width - schoolTitleWidth) / 2,
+    y: height - 85,
+    size: 20,
+    font: fontBold,
+    color: rgb(0.08, 0.16, 0.32),
+  });
+
+  const subHeader = `${data.schoolAddress} | Affiliated to CBSE (Affil No. ${data.affiliationNumber})`;
+  const subHeaderWidth = fontRegular.widthOfTextAtSize(subHeader, 10);
+  page.drawText(subHeader, {
+    x: (width - subHeaderWidth) / 2,
+    y: height - 105,
+    size: 10,
+    font: fontRegular,
+    color: rgb(0.4, 0.45, 0.55),
+  });
+
+  // Certificate Ribbon Banner
+  const certBanner = data.title.toUpperCase();
+  const certBannerWidth = fontBold.widthOfTextAtSize(certBanner, 18);
+  page.drawRectangle({
+    x: (width - certBannerWidth - 40) / 2,
+    y: height - 160,
+    width: certBannerWidth + 40,
+    height: 36,
+    color: rgb(0.92, 0.95, 1.0),
+    borderColor: rgb(0.78, 0.62, 0.22),
+    borderWidth: 1,
+  });
+
+  page.drawText(certBanner, {
+    x: (width - certBannerWidth) / 2,
+    y: height - 148,
+    size: 18,
+    font: fontBold,
+    color: rgb(0.72, 0.52, 0.12), // Deep Gold
+  });
+
+  // Citation Body
+  const presText = 'THIS IS PROUDLY PRESENTED TO';
+  const presWidth = fontBold.widthOfTextAtSize(presText, 10);
+  page.drawText(presText, {
+    x: (width - presWidth) / 2,
+    y: height - 200,
+    size: 10,
+    font: fontBold,
+    color: rgb(0.4, 0.45, 0.5),
+  });
+
+  // Recipient Name (Large Callout)
+  const studentName = data.studentName.toUpperCase();
+  const nameWidth = fontBold.widthOfTextAtSize(studentName, 26);
+  page.drawText(studentName, {
+    x: (width - nameWidth) / 2,
+    y: height - 245,
+    size: 26,
+    font: fontBold,
+    color: rgb(0.08, 0.16, 0.32),
+  });
+
+  page.drawLine({
+    start: { x: (width - nameWidth - 30) / 2, y: height - 255 },
+    end: { x: (width + nameWidth + 30) / 2, y: height - 255 },
+    thickness: 1.5,
+    color: rgb(0.78, 0.62, 0.22),
+  });
+
+  // Class & Admission Details
+  const studentDetails = `Class: ${data.className} - Section ${data.sectionName}   |   Admission No: ${data.admissionNumber}`;
+  const detailsWidth = fontRegular.widthOfTextAtSize(studentDetails, 12);
+  page.drawText(studentDetails, {
+    x: (width - detailsWidth) / 2,
+    y: height - 280,
+    size: 12,
+    font: fontRegular,
+    color: rgb(0.2, 0.25, 0.35),
+  });
+
+  // Award Reason
+  const reasonText = data.awardReason;
+  const reasonWidth = fontBold.widthOfTextAtSize(reasonText, 13);
+  page.drawText(reasonText, {
+    x: (width - reasonWidth) / 2,
+    y: height - 330,
+    size: 13,
+    font: fontBold,
+    color: rgb(0.12, 0.35, 0.22),
+  });
+
+  const categoryText = `Under category: ${data.achievementCategory.toUpperCase()} (Academic Session 2025–2026)`;
+  const catWidth = fontRegular.widthOfTextAtSize(categoryText, 10.5);
+  page.drawText(categoryText, {
+    x: (width - catWidth) / 2,
+    y: height - 355,
+    size: 10.5,
+    font: fontRegular,
+    color: rgb(0.4, 0.4, 0.4),
+  });
+
+  // Certificate Metadata (Left)
+  page.drawText(`Certificate Ref: ${data.certificateNumber}`, {
+    x: 60,
+    y: 80,
+    size: 9,
+    font: fontBold,
+    color: rgb(0.4, 0.45, 0.5),
+  });
+  page.drawText(`Issue Date: ${data.issueDate}`, {
+    x: 60,
+    y: 65,
+    size: 9,
+    font: fontRegular,
+    color: rgb(0.4, 0.45, 0.5),
+  });
+
+  // Signatures (Right & Center)
+  page.drawLine({
+    start: { x: 340, y: 80 },
+    end: { x: 490, y: 80 },
+    thickness: 1,
+    color: rgb(0.6, 0.6, 0.6),
+  });
+  page.drawText('Activity / Sports Coordinator', {
+    x: 350,
+    y: 65,
+    size: 9,
+    font: fontBold,
+    color: rgb(0.3, 0.3, 0.3),
+  });
+
+  page.drawLine({
+    start: { x: width - 230, y: 80 },
+    end: { x: width - 70, y: 80 },
+    thickness: 1,
+    color: rgb(0.6, 0.6, 0.6),
+  });
+  page.drawText('Principal / Head of Institution', {
+    x: width - 215,
+    y: 65,
+    size: 9,
+    font: fontBold,
+    color: rgb(0.08, 0.16, 0.32),
+  });
+
+  return await pdfDoc.save();
+}

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Library, BookOpen, Search, CheckCircle2 } from 'lucide-react';
+import { LibraryCirculationDesk } from '@/components/modules/library/circulation-desk';
 
 export default async function LibraryPage() {
   const auth = await getVerifiedAuthContext();
@@ -20,20 +21,32 @@ export default async function LibraryPage() {
             Library Catalog & Book Circulation
           </h1>
           <p className="text-xs text-slate-500 mt-1">
-            ISBN tracking, rack shelf indexing, barcode checkouts, and overdue fine collection.
+            ISBN tracking, rack shelf indexing, barcode checkouts, and automated overdue fine collection.
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Badge variant="success">Auto-Fine Calculator Enabled</Badge>
+          <Badge variant="outline">14-Day Lending Rule</Badge>
         </div>
       </div>
 
-      {/* Books Table */}
+      {/* Active Circulation Desk & Overdue Management */}
+      <div>
+        <LibraryCirculationDesk />
+      </div>
+
+      {/* Books Catalog Table */}
       <Card>
-        <CardHeader className="p-4 border-b border-slate-200">
-          <CardTitle className="text-sm font-semibold">
-            Catalogued Titles & Availability
-          </CardTitle>
+        <CardHeader className="p-4 border-b border-slate-200 flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="text-sm font-semibold">
+              Master Accession Catalog & Shelf Locations
+            </CardTitle>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Physical inventory across Main Library Stacks A through E
+            </p>
+          </div>
+          <Badge variant="default" className="text-xs">{books.length} Titles Listed</Badge>
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
