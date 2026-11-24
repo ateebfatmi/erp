@@ -42,6 +42,7 @@ import {
   Scale,
   Fingerprint,
   Percent,
+  ShieldCheck,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -145,6 +146,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'Fee Concessions', href: '/portal/admin/fees/concessions', icon: Percent },
           { label: 'Exams & Grading', href: '/portal/admin/exams', icon: BookOpen },
           { label: 'Admit Cards (Roll Slips)', href: '/portal/admin/exams/admit-cards', icon: FileText },
+          { label: 'Board LOC Pariksha Desk', href: '/portal/admin/exams/loc', icon: ShieldCheck },
           { label: '360° HPC Cell', href: '/portal/admin/exams/hpc', icon: Sparkles },
           { label: 'Question Bank', href: '/portal/admin/exams/question-bank', icon: BookOpen },
           { label: 'Syllabus Oversight', href: '/portal/admin/syllabus', icon: BookOpen },

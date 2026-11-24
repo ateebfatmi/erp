@@ -47,6 +47,12 @@ export default async function ExamsPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <a href="/portal/admin/exams/loc">
+            <Button variant="outline" size="sm" className="gap-1.5 text-xs cursor-pointer text-blue-700 bg-blue-50 border-blue-200">
+              <BookOpen className="h-3.5 w-3.5" />
+              <span>Board LOC Pariksha Desk</span>
+            </Button>
+          </a>
           <a href="/api/documents/report-card/aarav" target="_blank" rel="noreferrer">
             <Button variant="outline" size="sm" className="gap-1.5 text-xs cursor-pointer text-indigo-700 bg-indigo-50 border-indigo-200">
               <Download className="h-3.5 w-3.5" />
