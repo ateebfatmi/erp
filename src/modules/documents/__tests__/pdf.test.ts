@@ -5,6 +5,7 @@ import {
   generateStudentIdCardPdf,
   generateTransferCertificatePdf,
   generateMeritCertificatePdf,
+  generateAdmissionOfferLetterPdf,
 } from '../pdf-generator';
 
 describe('Document Generation Engine (pdf-lib)', () => {
@@ -137,6 +138,32 @@ describe('Document Generation Engine (pdf-lib)', () => {
       title: 'Certificate of Merit & Academic Excellence',
       awardReason: 'For securing 1st Position with 98.4% in CBSE Mid-Term Examination',
       achievementCategory: 'Senior Secondary Academic Distinction',
+    });
+
+    expect(bytes).toBeInstanceOf(Uint8Array);
+    expect(bytes.length).toBeGreaterThan(1000);
+    const header = String.fromCharCode(...bytes.slice(0, 5));
+    expect(header).toBe('%PDF-');
+  });
+
+  it('generates a valid, official Admission Offer Letter PDF', async () => {
+    const bytes = await generateAdmissionOfferLetterPdf({
+      schoolName: 'Delhi Public Global Academy',
+      schoolAddress: 'Vasant Kunj, New Delhi',
+      affiliationNumber: '2130894',
+      letterNumber: 'DPGA/ADM-OFFER/2026/089',
+      issueDate: '24/11/2026',
+      parentName: 'Mr. Sanjay Malhotra',
+      parentAddress: 'Safdarjung Enclave, New Delhi',
+      studentName: 'Vihaan Malhotra',
+      targetClass: 'Class 9',
+      academicSession: '2026–2027',
+      admissionFee: 25000,
+      cautionMoney: 10000,
+      tuitionQuarterFee: 19500,
+      totalPayable: 54500,
+      paymentDeadline: '15 December 2026',
+      orientationDate: '28 March 2027',
     });
 
     expect(bytes).toBeInstanceOf(Uint8Array);

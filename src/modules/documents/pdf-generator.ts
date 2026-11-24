@@ -1016,3 +1016,210 @@ export async function generateMeritCertificatePdf(data: MeritCertificateData): P
 
   return await pdfDoc.save();
 }
+
+export interface AdmissionOfferLetterData {
+  schoolName: string;
+  schoolAddress: string;
+  affiliationNumber: string;
+  letterNumber: string;
+  issueDate: string;
+  parentName: string;
+  parentAddress: string;
+  studentName: string;
+  targetClass: string;
+  academicSession: string;
+  admissionFee: number;
+  cautionMoney: number;
+  tuitionQuarterFee: number;
+  totalPayable: number;
+  paymentDeadline: string;
+  orientationDate: string;
+}
+
+/**
+ * Generates an official Provisional Admission Offer Letter PDF (A4 Portrait)
+ */
+export async function generateAdmissionOfferLetterPdf(data: AdmissionOfferLetterData): Promise<Uint8Array> {
+  const pdfDoc = await PDFDocument.create();
+  const page = pdfDoc.addPage([595.28, 841.89]); // A4 Portrait
+  const { width, height } = page.getSize();
+
+  const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+  const fontRegular = await pdfDoc.embedFont(StandardFonts.Helvetica);
+
+  // Border frame
+  page.drawRectangle({
+    x: 30,
+    y: 30,
+    width: width - 60,
+    height: height - 60,
+    borderColor: rgb(0.12, 0.22, 0.4),
+    borderWidth: 1.5,
+  });
+
+  // Letterhead Top Banner
+  page.drawRectangle({
+    x: 32,
+    y: height - 105,
+    width: width - 64,
+    height: 73,
+    color: rgb(0.96, 0.98, 1.0),
+  });
+
+  page.drawText(data.schoolName.toUpperCase(), {
+    x: 50,
+    y: height - 60,
+    size: 15,
+    font: fontBold,
+    color: rgb(0.08, 0.15, 0.35),
+  });
+
+  page.drawText(`${data.schoolAddress} | Affiliated to CBSE (Affiliation No: ${data.affiliationNumber})`, {
+    x: 50,
+    y: height - 76,
+    size: 9.5,
+    font: fontRegular,
+    color: rgb(0.35, 0.4, 0.5),
+  });
+
+  page.drawText('OFFICE OF THE ADMISSIONS DIRECTORATE & REGISTRAR', {
+    x: 50,
+    y: height - 94,
+    size: 8.5,
+    font: fontBold,
+    color: rgb(0.15, 0.38, 0.92),
+  });
+
+  // Metadata: Ref and Date
+  const metaY = height - 130;
+  page.drawText(`Ref: ${data.letterNumber}`, { x: 50, y: metaY, size: 9, font: fontBold });
+  page.drawText(`Date: ${data.issueDate}`, { x: 440, y: metaY, size: 9, font: fontBold });
+
+  page.drawLine({
+    start: { x: 50, y: metaY - 10 },
+    end: { x: width - 50, y: metaY - 10 },
+    thickness: 0.8,
+    color: rgb(0.8, 0.85, 0.9),
+  });
+
+  // Addressee
+  const addrY = metaY - 30;
+  page.drawText('To,', { x: 50, y: addrY, size: 9.5, font: fontRegular });
+  page.drawText(data.parentName, { x: 50, y: addrY - 14, size: 10.5, font: fontBold });
+  page.drawText(data.parentAddress, { x: 50, y: addrY - 28, size: 9, font: fontRegular, color: rgb(0.3, 0.3, 0.3) });
+
+  // Subject
+  const subY = addrY - 55;
+  page.drawRectangle({
+    x: 50,
+    y: subY - 6,
+    width: width - 100,
+    height: 22,
+    color: rgb(0.92, 0.96, 1.0),
+  });
+  page.drawText(`SUBJECT: PROVISIONAL ADMISSION OFFER — ${data.targetClass.toUpperCase()} (${data.academicSession})`, {
+    x: 58,
+    y: subY,
+    size: 9.5,
+    font: fontBold,
+    color: rgb(0.08, 0.18, 0.4),
+  });
+
+  // Body Paragraphs
+  const bodyY = subY - 30;
+  page.drawText(`Dear ${data.parentName},`, { x: 50, y: bodyY, size: 9.5, font: fontRegular });
+
+  const p1 = `We are pleased to inform you that following the entrance evaluation and document verification,`;
+  const p2 = `your ward Master/Miss ${data.studentName.toUpperCase()} has been provisionally selected for admission to`;
+  const p3 = `${data.targetClass} at Delhi Public Global Academy for Academic Session ${data.academicSession}.`;
+
+  page.drawText(p1, { x: 50, y: bodyY - 18, size: 9.5, font: fontRegular });
+  page.drawText(p2, { x: 50, y: bodyY - 32, size: 9.5, font: fontRegular });
+  page.drawText(p3, { x: 50, y: bodyY - 46, size: 9.5, font: fontBold, color: rgb(0.1, 0.3, 0.15) });
+
+  // Fee Structure Table
+  const feeTableY = bodyY - 75;
+  page.drawRectangle({
+    x: 50,
+    y: feeTableY - 5,
+    width: width - 100,
+    height: 20,
+    color: rgb(0.12, 0.22, 0.38),
+  });
+  page.drawText('PARTICULARS OF ADMISSION FEE SCHEDULE', { x: 60, y: feeTableY, size: 8.5, font: fontBold, color: rgb(1, 1, 1) });
+  page.drawText('AMOUNT (INR)', { x: 440, y: feeTableY, size: 8.5, font: fontBold, color: rgb(1, 1, 1) });
+
+  let feeRowY = feeTableY - 20;
+  const feeItems = [
+    { title: 'One-Time Admission & Administrative Registration Fee', amt: data.admissionFee },
+    { title: 'Refundable Institutional Caution Money (Security Deposit)', amt: data.cautionMoney },
+    { title: 'Quarter 1 Tuition, Smart Lab & Activity Fee', amt: data.tuitionQuarterFee },
+  ];
+
+  for (const item of feeItems) {
+    page.drawText(item.title, { x: 60, y: feeRowY, size: 8.5, font: fontRegular, color: rgb(0.2, 0.2, 0.2) });
+    page.drawText(`INR ${item.amt.toLocaleString('en-IN')}.00`, { x: 440, y: feeRowY, size: 8.5, font: fontBold });
+    feeRowY -= 18;
+  }
+
+  // Total Line
+  page.drawLine({
+    start: { x: 50, y: feeRowY + 5 },
+    end: { x: width - 50, y: feeRowY + 5 },
+    thickness: 1,
+    color: rgb(0.8, 0.8, 0.8),
+  });
+
+  page.drawText('TOTAL AMOUNT PAYABLE TO CONFIRM SEAT:', { x: 60, y: feeRowY - 10, size: 9.5, font: fontBold });
+  page.drawText(`INR ${data.totalPayable.toLocaleString('en-IN')}.00`, {
+    x: 430,
+    y: feeRowY - 10,
+    size: 11,
+    font: fontBold,
+    color: rgb(0.12, 0.45, 0.2),
+  });
+
+  // Next Steps & Deadlines
+  const stepY = feeRowY - 40;
+  page.drawText('IMPORTANT ADMISSION INSTRUCTIONS & DEADLINES:', { x: 50, y: stepY, size: 9, font: fontBold, color: rgb(0.8, 0.2, 0.1) });
+
+  const notes = [
+    `1. Seat Confirmation Deadline: The total admission fee must be cleared by ${data.paymentDeadline}.`,
+    `2. Mandatory Enclosures: Original Transfer Certificate (TC counter-signed), Birth Certificate, and 4 Photos.`,
+    `3. Student Orientation Program: Campus induction is scheduled for ${data.orientationDate}.`,
+    `4. Mode of Payment: Online via School Parent Portal (Razorpay UPI/Cards) or Bank Demand Draft.`,
+  ];
+
+  let noteY = stepY - 16;
+  for (const n of notes) {
+    page.drawText(n, { x: 50, y: noteY, size: 8, font: fontRegular, color: rgb(0.3, 0.3, 0.3) });
+    noteY -= 14;
+  }
+
+  // Signatures
+  page.drawLine({
+    start: { x: 50, y: 95 },
+    end: { x: 200, y: 95 },
+    thickness: 1,
+    color: rgb(0.7, 0.7, 0.7),
+  });
+  page.drawText('Dean of Admissions', { x: 75, y: 80, size: 9, font: fontBold, color: rgb(0.3, 0.3, 0.3) });
+
+  page.drawLine({
+    start: { x: width - 200, y: 95 },
+    end: { x: width - 50, y: 95 },
+    thickness: 1,
+    color: rgb(0.7, 0.7, 0.7),
+  });
+  page.drawText('Principal / Institutional Seal', { x: width - 185, y: 80, size: 9, font: fontBold, color: rgb(0.08, 0.15, 0.35) });
+
+  page.drawText('* This provisional offer is subject to verification of original academic credentials and timely fee clearance.', {
+    x: 50,
+    y: 50,
+    size: 7.5,
+    font: fontRegular,
+    color: rgb(0.5, 0.5, 0.5),
+  });
+
+  return await pdfDoc.save();
+}
