@@ -139,6 +139,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'Executive Dashboard', href: '/portal/admin', icon: LayoutDashboard },
           { label: 'Students & SIS', href: '/portal/admin/students', icon: Users },
           { label: 'CWSN & Inclusive IEP', href: '/portal/admin/students/cwsn', icon: HeartHandshake },
+          { label: 'Inclusive Resource Room', href: '/portal/admin/students/resource-room', icon: Building2 },
           { label: 'House & Discipline', href: '/portal/admin/students/discipline', icon: Trophy },
           { label: 'No-Dues Clearance', href: '/portal/admin/students/clearance', icon: CheckCircle2 },
           { label: 'Certificates & Documents', href: '/portal/admin/documents', icon: Award },
