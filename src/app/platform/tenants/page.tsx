@@ -1,6 +1,6 @@
 import React from 'react';
-import PlatformDashboardPage from '../page';
+import { TenantManager } from '@/components/modules/platform/tenant-manager';
 
 export default function PlatformTenantsPage() {
-  return <PlatformDashboardPage />;
+  return <TenantManager />;
 }
