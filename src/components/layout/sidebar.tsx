@@ -134,6 +134,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'House & Discipline', href: '/portal/admin/students/discipline', icon: Trophy },
           { label: 'No-Dues Clearance', href: '/portal/admin/students/clearance', icon: CheckCircle2 },
           { label: 'Certificates & Documents', href: '/portal/admin/documents', icon: Award },
+          { label: 'Transfer Certificates (TC)', href: '/portal/admin/students/tc', icon: Award },
           { label: 'Admissions Desk', href: '/portal/admin/admissions', icon: UserCheck },
           { label: 'RTE 25% EWS Quota', href: '/portal/admin/admissions/rte', icon: Scale },
           { label: 'Attendance Hub', href: '/portal/admin/attendance', icon: CalendarCheck },
