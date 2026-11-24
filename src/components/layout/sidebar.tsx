@@ -159,6 +159,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'Master Timetable', href: '/portal/admin/timetable', icon: Calendar },
           { label: 'Academic Calendar (220-Day)', href: '/portal/admin/calendar', icon: Calendar },
           { label: '10 Bagless Days Hub', href: '/portal/admin/academics/bagless-days', icon: Sparkles },
+          { label: 'Career & CUET Cell', href: '/portal/admin/academics/career-guidance', icon: Compass },
           { label: 'Arrangement Matrix', href: '/portal/admin/staff/substitution', icon: Sparkles },
           { label: 'Health & Infirmary', href: '/portal/admin/health', icon: HeartPulse },
           { label: 'Health & Wellness (SHWP)', href: '/portal/admin/health/wellness', icon: Sparkles },
