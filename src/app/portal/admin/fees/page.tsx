@@ -1,11 +1,12 @@
 import React from 'react';
+import Link from 'next/link';
 import { repository } from '@/lib/database/repository';
 import { getVerifiedAuthContext } from '@/lib/auth/session';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { CreditCard, Receipt, AlertCircle, CheckCircle2, ShieldCheck, ArrowDownRight, Scale } from 'lucide-react';
+import { CreditCard, Receipt, AlertCircle, CheckCircle2, ShieldCheck, ArrowDownRight, Scale, Percent } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { recordFeePaymentAction } from '@/modules/fees/actions';
 import { DoubleEntryLedgerViewer } from '@/components/modules/accounting/ledger-viewer';
@@ -35,7 +36,15 @@ export default async function FeesPage() {
             Automated double-entry fee allocations, online UPI/card checkouts, and offline receipt collection.
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
+          <Link
+            href="/portal/admin/fees/concessions"
+            className="px-3 py-1.5 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 text-emerald-800 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors"
+          >
+            <Percent className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Concessions & Scholarships</span>
+            <ArrowDownRight className="w-3 h-3 text-emerald-600 -rotate-90" />
+          </Link>
           <Badge variant="success">Razorpay Live Integrated</Badge>
         </div>
       </div>

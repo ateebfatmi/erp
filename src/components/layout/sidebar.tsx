@@ -41,6 +41,7 @@ import {
   ShoppingBag,
   Scale,
   Fingerprint,
+  Percent,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -139,6 +140,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'RTE 25% EWS Quota', href: '/portal/admin/admissions/rte', icon: Scale },
           { label: 'Attendance Hub', href: '/portal/admin/attendance', icon: CalendarCheck },
           { label: 'Fees & Collections', href: '/portal/admin/fees', icon: CreditCard },
+          { label: 'Fee Concessions', href: '/portal/admin/fees/concessions', icon: Percent },
           { label: 'Exams & Grading', href: '/portal/admin/exams', icon: BookOpen },
           { label: 'Admit Cards (Roll Slips)', href: '/portal/admin/exams/admit-cards', icon: FileText },
           { label: '360° HPC Cell', href: '/portal/admin/exams/hpc', icon: Sparkles },
