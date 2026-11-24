@@ -1,6 +1,6 @@
 import React from 'react';
-import TimetablePage from '../../admin/timetable/page';
+import { StudentTimetableView } from '@/components/modules/timetable/student-timetable-view';
 
 export default function ParentTimetablePage() {
-  return <TimetablePage />;
+  return <StudentTimetableView />;
 }
