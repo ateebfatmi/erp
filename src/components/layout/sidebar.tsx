@@ -38,6 +38,7 @@ import {
   MapPin,
   HeartHandshake,
   Gauge,
+  ShoppingBag,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -88,6 +89,8 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'Leave Applications', href: '/portal/parent/leave', icon: Calendar },
           { label: 'Digital Consent & Trips', href: '/portal/parent/consent', icon: CheckCircle2 },
           { label: 'Report Cards', href: '/portal/parent/reports', icon: BookOpen },
+          { label: 'Exam Admit Card', href: '/portal/parent/admit-card', icon: FileText },
+          { label: 'Bookstore & Uniform Kits', href: '/portal/parent/store', icon: ShoppingBag },
           { label: 'Live Bus Tracking', href: '/portal/parent/transport', icon: Bus },
           { label: 'Smart Canteen', href: '/portal/parent/canteen', icon: UtensilsCrossed },
           { label: 'Health & Medical', href: '/portal/parent/health', icon: HeartPulse },
@@ -103,6 +106,8 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'My Timetable', href: '/portal/student/timetable', icon: Calendar },
           { label: 'Assignments & CBT', href: '/portal/student/homework', icon: FileText },
           { label: 'Exam Results', href: '/portal/student/results', icon: BookOpen },
+          { label: 'Exam Admit Card', href: '/portal/student/admit-card', icon: FileText },
+          { label: 'Bookstore & Uniform Kits', href: '/portal/parent/store', icon: ShoppingBag },
           { label: '360° Holistic Card (HPC)', href: '/portal/student/hpc', icon: Sparkles },
           { label: 'Stream & Career Pathways', href: '/portal/student/career', icon: Compass },
           { label: 'Alumni Mentorship', href: '/portal/student/alumni', icon: GraduationCap },
@@ -127,6 +132,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'Attendance Hub', href: '/portal/admin/attendance', icon: CalendarCheck },
           { label: 'Fees & Collections', href: '/portal/admin/fees', icon: CreditCard },
           { label: 'Exams & Grading', href: '/portal/admin/exams', icon: BookOpen },
+          { label: 'Admit Cards (Roll Slips)', href: '/portal/admin/exams/admit-cards', icon: FileText },
           { label: '360° HPC Cell', href: '/portal/admin/exams/hpc', icon: Sparkles },
           { label: 'Question Bank', href: '/portal/admin/exams/question-bank', icon: BookOpen },
           { label: 'Syllabus Oversight', href: '/portal/admin/syllabus', icon: BookOpen },
@@ -148,6 +154,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'Library Catalog', href: '/portal/admin/library', icon: Library },
           { label: 'Inventory & Assets', href: '/portal/admin/inventory', icon: Boxes },
           { label: 'Store Indents & Issues', href: '/portal/admin/inventory/requisition', icon: Boxes },
+          { label: 'Campus Book & Uniform Store', href: '/portal/admin/inventory/store', icon: ShoppingBag },
           { label: 'Alumni Network', href: '/portal/admin/alumni', icon: GraduationCap },
           { label: 'Circulars & Notices', href: '/portal/admin/notices', icon: Bell },
           { label: 'Communication Hub', href: '/portal/admin/communication', icon: Bell },

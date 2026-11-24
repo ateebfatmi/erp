@@ -19,7 +19,19 @@ import {
   Navigation,
   FileText,
   Activity,
+  Radio,
+  Bell,
+  MapPin,
+  Send,
 } from 'lucide-react';
+import {
+  TransportAlert,
+  DelayReason,
+  INITIAL_TRANSPORT_ALERTS,
+  createDelayBroadcast,
+  evaluateGeofenceProximity,
+  evaluateSpeedCompliance,
+} from '@/modules/transport/delay-broadcast';
 import {
   TransportTripSheet,
   FuelRefillLog,
@@ -39,9 +51,19 @@ const MILEAGE_BADGES: Record<MileageHealth, { label: string; badge: string }> = 
 };
 
 export function TransportTripsManager() {
-  const [activeTab, setActiveTab] = useState<'trips' | 'fuel'>('trips');
+  const [activeTab, setActiveTab] = useState<'trips' | 'fuel' | 'delays'>('trips');
   const [trips, setTrips] = useState<TransportTripSheet[]>(INITIAL_TRIP_SHEETS);
   const [fuelLogs, setFuelLogs] = useState<FuelRefillLog[]>(INITIAL_FUEL_LOGS);
+  const [alerts, setAlerts] = useState<TransportAlert[]>(INITIAL_TRANSPORT_ALERTS);
+
+  // Delay & Geofence Broadcast Modal State
+  const [isDelayModalOpen, setIsDelayModalOpen] = useState(false);
+  const [delayBusNumber, setDelayBusNumber] = useState('DL-01-AB-1044');
+  const [delayRouteId, setDelayRouteId] = useState('ROUTE-04');
+  const [delayMinutes, setDelayMinutes] = useState(15);
+  const [delayReason, setDelayReason] = useState<DelayReason>('TRAFFIC_CONGESTION');
+  const [delayCustomNote, setDelayCustomNote] = useState('Heavy traffic at Outer Ring Road flyover');
+  const [delayStops, setDelayStops] = useState('Sector 14 Market, Green Park Metro, Hauz Khas');
 
   // Dispatch Trip Modal State
   const [isDispatchModalOpen, setIsDispatchModalOpen] = useState(false);
@@ -139,6 +161,56 @@ export function TransportTripsManager() {
     setTimeout(() => setNotification(null), 4000);
   };
 
+  const handleBroadcastDelaySubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const stopsArray = delayStops.split(',').map((s) => s.trim()).filter(Boolean);
+      const newAlert = createDelayBroadcast({
+        routeId: delayRouteId,
+        busNumber: delayBusNumber,
+        delayMinutes: Number(delayMinutes),
+        reason: delayReason,
+        customNote: delayCustomNote,
+        affectedStops: stopsArray.length > 0 ? stopsArray : ['All Route Stops'],
+        broadcastBy: 'Transport Control Room Supervisor',
+      });
+      setAlerts((prev) => [newAlert, ...prev]);
+      setIsDelayModalOpen(false);
+      setNotification(`Multichannel Delay Broadcast dispatched for ${newAlert.busNumber} (~${newAlert.delayMinutes} min delay via ${newAlert.channels.join(', ')}).`);
+      setTimeout(() => setNotification(null), 5000);
+    } catch (err: any) {
+      alert(err.message || 'Error creating delay broadcast');
+    }
+  };
+
+  const handleSimulateGeofence = () => {
+    const geo = evaluateGeofenceProximity({
+      distanceToStopMeters: 450,
+      busNumber: 'DL-01-AB-1044',
+      routeId: 'ROUTE-04',
+      stopName: 'Green Park Metro Gate 2',
+    });
+    if (geo.alert) {
+      setAlerts((prev) => [geo.alert!, ...prev]);
+      setNotification(`Geofence Proximity Trigger: Alert dispatched for Green Park Metro (~450m / 3 mins).`);
+      setTimeout(() => setNotification(null), 4000);
+    }
+  };
+
+  const handleSimulateSpeedViolation = () => {
+    const speedCheck = evaluateSpeedCompliance({
+      currentSpeedKmh: 48,
+      busNumber: 'DL-01-AB-1044',
+      routeId: 'ROUTE-04',
+      speedLimitKmh: 40,
+    });
+    if (speedCheck.speedAlert) {
+      setAlerts((prev) => [speedCheck.speedAlert!, ...prev]);
+      setNotification(`CRITICAL SPEED AUDIT: Speed limit violation recorded (48 km/h > 40 km/h limit). Notice logged.`);
+      setTimeout(() => setNotification(null), 5000);
+    }
+  };
+
   const handlePrint = () => {
     window.print();
   };
@@ -202,6 +274,14 @@ export function TransportTripsManager() {
             </Button>
             <Button
               size="sm"
+              onClick={() => setIsDelayModalOpen(true)}
+              className="gap-1.5 bg-rose-600 hover:bg-rose-700 text-white cursor-pointer shadow-xs text-xs font-semibold"
+            >
+              <Radio className="h-4 w-4" />
+              <span>Broadcast Delay</span>
+            </Button>
+            <Button
+              size="sm"
               variant="outline"
               onClick={handlePrint}
               className="gap-1.5 bg-white/10 text-white border-white/20 hover:bg-white/20 cursor-pointer text-xs"
@@ -239,6 +319,19 @@ export function TransportTripsManager() {
         >
           <Fuel className="h-4 w-4" />
           Diesel Fuel Refills & Fleet Mileage Audit ({fuelLogs.length})
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('delays')}
+          className={`pb-3 px-4 text-xs font-semibold flex items-center gap-2 border-b-2 transition-colors cursor-pointer ${
+            activeTab === 'delays'
+              ? 'border-amber-600 text-amber-800'
+              : 'border-transparent text-slate-500 hover:text-slate-700'
+          }`}
+        >
+          <Bell className="h-4 w-4" />
+          Delay Bulletins & Geofence Desk ({alerts.length})
         </button>
       </div>
 
@@ -416,6 +509,264 @@ export function TransportTripsManager() {
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* TAB 3: DELAY BULLETINS & GEOFENCE DESK */}
+      {activeTab === 'delays' && (
+        <div className="space-y-4">
+          <Card className="border-slate-200 shadow-xs">
+            <CardHeader className="p-4 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <CardTitle className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                  <Radio className="h-4 w-4 text-rose-600 animate-pulse" />
+                  Real-Time Transport Delay Bulletins & Geofence Desk
+                </CardTitle>
+                <CardDescription className="text-xs text-slate-500">
+                  Multichannel SMS, WhatsApp, and App notifications to parents for traffic bottlenecks and stop proximity alerts
+                </CardDescription>
+              </div>
+
+              <div className="flex items-center gap-2 flex-wrap">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleSimulateGeofence}
+                  className="text-xs h-8 border-blue-200 text-blue-700 bg-blue-50/50 hover:bg-blue-100 gap-1.5"
+                >
+                  <MapPin className="h-3.5 w-3.5" />
+                  <span>Simulate Geofence (450m)</span>
+                </Button>
+
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleSimulateSpeedViolation}
+                  className="text-xs h-8 border-rose-200 text-rose-700 bg-rose-50/50 hover:bg-rose-100 gap-1.5"
+                >
+                  <Gauge className="h-3.5 w-3.5" />
+                  <span>Audit Speed Limit (48 km/h)</span>
+                </Button>
+
+                <Button
+                  size="sm"
+                  onClick={() => setIsDelayModalOpen(true)}
+                  className="text-xs h-8 bg-rose-600 hover:bg-rose-700 text-white gap-1.5 font-semibold"
+                >
+                  <Send className="h-3.5 w-3.5" />
+                  <span>New Delay Broadcast</span>
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs text-left">
+                  <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
+                    <tr>
+                      <th className="py-2.5 px-3">Time</th>
+                      <th className="py-2.5 px-3">Bus & Route</th>
+                      <th className="py-2.5 px-3">Category</th>
+                      <th className="py-2.5 px-3">Notification Bulletin</th>
+                      <th className="py-2.5 px-3">Stops Impacted</th>
+                      <th className="py-2.5 px-3">Dispatch Channels</th>
+                      <th className="py-2.5 px-3">Source</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {alerts.map((al) => (
+                      <tr key={al.id} className="hover:bg-slate-50/70 transition-colors">
+                        <td className="py-3 px-3 font-mono font-medium text-slate-600 whitespace-nowrap">
+                          {al.timestamp}
+                        </td>
+                        <td className="py-3 px-3">
+                          <span className="font-bold text-slate-900 block">{al.busNumber}</span>
+                          <span className="font-mono text-[10px] text-slate-400">{al.routeId}</span>
+                        </td>
+                        <td className="py-3 px-3">
+                          <span
+                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold ${
+                              al.severity === 'CRITICAL'
+                                ? 'bg-rose-100 text-rose-800 border border-rose-200'
+                                : al.severity === 'WARNING'
+                                ? 'bg-amber-100 text-amber-800 border border-amber-200'
+                                : 'bg-blue-100 text-blue-800 border border-blue-200'
+                            }`}
+                          >
+                            {al.severity}
+                          </span>
+                        </td>
+                        <td className="py-3 px-3 max-w-sm">
+                          <div className="font-semibold text-slate-900">{al.title}</div>
+                          <p className="text-[11px] text-slate-600 leading-relaxed mt-0.5">{al.message}</p>
+                        </td>
+                        <td className="py-3 px-3">
+                          <div className="flex flex-wrap gap-1 max-w-xs">
+                            {al.affectedStops.map((st, i) => (
+                              <span
+                                key={i}
+                                className="px-1.5 py-0.5 bg-slate-100 text-slate-700 rounded text-[10px] font-medium"
+                              >
+                                {st}
+                              </span>
+                            ))}
+                          </div>
+                        </td>
+                        <td className="py-3 px-3">
+                          <div className="flex flex-wrap gap-1">
+                            {al.channels.map((ch) => (
+                              <Badge
+                                key={ch}
+                                variant="outline"
+                                className="text-[9px] font-mono bg-white font-semibold text-slate-700"
+                              >
+                                {ch}
+                              </Badge>
+                            ))}
+                          </div>
+                        </td>
+                        <td className="py-3 px-3 text-[11px] text-slate-500 whitespace-nowrap">
+                          {al.broadcastBy}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Broadcast Delay Alert Modal */}
+      {isDelayModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                  <Radio className="h-4 w-4 text-rose-600 animate-pulse" />
+                  Instant Route Delay & Traffic Notification Broadcast
+                </h3>
+                <p className="text-xs text-slate-500">
+                  Sends SMS, WhatsApp, and App push bulletins to all parents on selected route
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsDelayModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 font-bold text-lg"
+              >
+                &times;
+              </button>
+            </div>
+
+            <form onSubmit={handleBroadcastDelaySubmit} className="space-y-3 text-xs">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="font-semibold text-slate-700 block mb-1">Select Bus Number *:</label>
+                  <select
+                    className="w-full h-8 text-xs rounded-md border border-slate-300 px-2 bg-white"
+                    value={delayBusNumber}
+                    onChange={(e) => setDelayBusNumber(e.target.value)}
+                  >
+                    <option value="DL-01-AB-1044">DL-01-AB-1044 (Route 4)</option>
+                    <option value="UP 16 BT 4410">UP 16 BT 4410 (Route 1)</option>
+                    <option value="UP 16 BT 5520">UP 16 BT 5520 (Route 3)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="font-semibold text-slate-700 block mb-1">Route Identifier *:</label>
+                  <Input
+                    type="text"
+                    required
+                    value={delayRouteId}
+                    onChange={(e) => setDelayRouteId(e.target.value)}
+                    className="h-8 text-xs font-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="font-semibold text-slate-700 block mb-1">Delay Duration (Minutes) *:</label>
+                  <Input
+                    type="number"
+                    min="1"
+                    max="120"
+                    required
+                    value={delayMinutes}
+                    onChange={(e) => setDelayMinutes(Number(e.target.value))}
+                    className="h-8 text-xs font-mono"
+                  />
+                </div>
+
+                <div>
+                  <label className="font-semibold text-slate-700 block mb-1">Delay Root Cause *:</label>
+                  <select
+                    className="w-full h-8 text-xs rounded-md border border-slate-300 px-2 bg-white"
+                    value={delayReason}
+                    onChange={(e) => setDelayReason(e.target.value as DelayReason)}
+                  >
+                    <option value="TRAFFIC_CONGESTION">Heavy Traffic & Bottleneck</option>
+                    <option value="ROAD_DIVERSION">Municipal Road Diversion / Work</option>
+                    <option value="WEATHER_FOG">Dense Winter Fog / Low Visibility</option>
+                    <option value="VIP_MOVEMENT">City VIP Motorcade Route Hold</option>
+                    <option value="MECHANICAL_ISSUE">Vehicle Inspection / Tire Repair</option>
+                    <option value="ACCIDENT_GRIDLOCK">External Highway Congestion</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="font-semibold text-slate-700 block mb-1">Custom Operational Note (Optional):</label>
+                <Input
+                  type="text"
+                  placeholder="e.g. Flyover construction near Sector 18"
+                  value={delayCustomNote}
+                  onChange={(e) => setDelayCustomNote(e.target.value)}
+                  className="h-8 text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="font-semibold text-slate-700 block mb-1">Affected Bus Stops (Comma separated):</label>
+                <Input
+                  type="text"
+                  placeholder="Sector 14 Market, Green Park Metro, Hauz Khas"
+                  value={delayStops}
+                  onChange={(e) => setDelayStops(e.target.value)}
+                  className="h-8 text-xs"
+                />
+              </div>
+
+              <div className="p-2.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-[11px] space-y-1">
+                <span className="font-bold block">Automated Parent Notification Delivery:</span>
+                <p>
+                  Delays $\ge$ 15 minutes automatically activate high-priority SMS gateway dispatch in addition to WhatsApp Business template and Push Notifications.
+                </p>
+              </div>
+
+              <div className="pt-3 border-t border-slate-200 flex items-center justify-end gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsDelayModalOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  size="sm"
+                  className="bg-rose-600 hover:bg-rose-700 text-white font-semibold cursor-pointer text-xs gap-1.5"
+                >
+                  <Send className="h-3.5 w-3.5" />
+                  <span>Broadcast Bulletin Now</span>
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
 
       {/* Dispatch Trip Modal */}

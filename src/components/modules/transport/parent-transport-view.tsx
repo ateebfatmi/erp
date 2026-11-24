@@ -17,7 +17,12 @@ import {
   UserCheck,
   Gauge,
   Sparkles,
+  Bell,
 } from 'lucide-react';
+import {
+  TransportAlert,
+  INITIAL_TRANSPORT_ALERTS,
+} from '@/modules/transport/delay-broadcast';
 import {
   LiveBusTelematics,
   INITIAL_BUS_TELEMATICS,
@@ -27,6 +32,7 @@ import {
 
 export function ParentTransportView() {
   const [telematics] = useState<LiveBusTelematics>(INITIAL_BUS_TELEMATICS);
+  const [alerts, setAlerts] = useState<TransportAlert[]>(INITIAL_TRANSPORT_ALERTS);
   const [activeShift, setActiveShift] = useState<'MORNING' | 'AFTERNOON'>('MORNING');
   const [feedback, setFeedback] = useState<string | null>(null);
 
@@ -57,6 +63,75 @@ export function ParentTransportView() {
           >
             Dismiss
           </button>
+        </div>
+      )}
+
+      {/* Live Route Bulletins & Geofence Approach Radar */}
+      {alerts.length > 0 && (
+        <div className="space-y-3">
+          {alerts.map((al) => {
+            const isDelay = al.type === 'DELAY_BROADCAST';
+            const isGeofence = al.type === 'GEOFENCE_PROXIMITY';
+
+            return (
+              <div
+                key={al.id}
+                className={`p-4 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs animate-in fade-in duration-200 ${
+                  isDelay
+                    ? 'bg-amber-500/10 border-amber-500/30 text-amber-900 dark:text-amber-200'
+                    : isGeofence
+                    ? 'bg-blue-500/10 border-blue-500/30 text-blue-900 dark:text-blue-200'
+                    : 'bg-rose-500/10 border-rose-500/30 text-rose-900 dark:text-rose-200'
+                }`}
+              >
+                <div className="flex items-start gap-3">
+                  <div
+                    className={`p-2 rounded-lg shrink-0 ${
+                      isDelay
+                        ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300'
+                        : isGeofence
+                        ? 'bg-blue-500/20 text-blue-700 dark:text-blue-300'
+                        : 'bg-rose-500/20 text-rose-700 dark:text-rose-300'
+                    }`}
+                  >
+                    {isDelay ? (
+                      <Clock className="w-5 h-5 animate-pulse" />
+                    ) : isGeofence ? (
+                      <Radio className="w-5 h-5 animate-pulse" />
+                    ) : (
+                      <AlertTriangle className="w-5 h-5" />
+                    )}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-bold text-xs">{al.title}</span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-black/10 font-mono">
+                        {al.timestamp}
+                      </span>
+                      {al.channels.map((ch) => (
+                        <span
+                          key={ch}
+                          className="text-[9px] px-1.5 py-0.2 rounded bg-black/5 font-semibold uppercase"
+                        >
+                          {ch}
+                        </span>
+                      ))}
+                    </div>
+                    <p className="text-xs mt-1 leading-relaxed opacity-90">{al.message}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+                  <button
+                    onClick={() => setAlerts((prev) => prev.filter((item) => item.id !== al.id))}
+                    className="text-xs opacity-75 hover:opacity-100 font-semibold px-2 py-1 rounded bg-black/5 hover:bg-black/10 transition-colors"
+                  >
+                    Acknowledge
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
 
