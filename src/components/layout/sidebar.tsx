@@ -34,6 +34,7 @@ import {
   LifeBuoy,
   Layers,
   Award,
+  Compass,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -68,6 +69,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'Syllabus Tracker', href: '/portal/teacher/syllabus', icon: ClipboardList },
           { label: 'Lab & Facility Booking', href: '/portal/teacher/facilities', icon: Layers },
           { label: 'Faculty Leaves', href: '/portal/teacher/leave', icon: Briefcase },
+          { label: 'My Payslips & Tax', href: '/portal/teacher/payroll', icon: CreditCard },
           { label: 'PTM Consultations', href: '/portal/teacher/ptm', icon: Users },
           { label: 'My Timetable', href: '/portal/teacher/timetable', icon: Calendar },
         ];
@@ -77,6 +79,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'Parent Dashboard', href: '/portal/parent', icon: LayoutDashboard },
           { label: 'Fee Payments', href: '/portal/parent/fees', icon: CreditCard },
           { label: 'Attendance History', href: '/portal/parent/attendance', icon: CalendarCheck },
+          { label: 'Leave Applications', href: '/portal/parent/leave', icon: Calendar },
           { label: 'Report Cards', href: '/portal/parent/reports', icon: BookOpen },
           { label: 'Live Bus Tracking', href: '/portal/parent/transport', icon: Bus },
           { label: 'Smart Canteen', href: '/portal/parent/canteen', icon: UtensilsCrossed },
@@ -93,6 +96,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'My Timetable', href: '/portal/student/timetable', icon: Calendar },
           { label: 'Assignments & CBT', href: '/portal/student/homework', icon: FileText },
           { label: 'Exam Results', href: '/portal/student/results', icon: BookOpen },
+          { label: 'Stream & Career Pathways', href: '/portal/student/career', icon: Compass },
           { label: 'House Championship', href: '/portal/student/activities', icon: Trophy },
           { label: 'Digital Library', href: '/portal/student/library', icon: Library },
           { label: 'My Health Card', href: '/portal/student/health', icon: HeartPulse },
