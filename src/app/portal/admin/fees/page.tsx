@@ -5,9 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { CreditCard, Receipt, AlertCircle, CheckCircle2, ShieldCheck, ArrowDownRight } from 'lucide-react';
+import { CreditCard, Receipt, AlertCircle, CheckCircle2, ShieldCheck, ArrowDownRight, Scale } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { recordFeePaymentAction } from '@/modules/fees/actions';
+import { DoubleEntryLedgerViewer } from '@/components/modules/accounting/ledger-viewer';
 
 export default async function FeesPage() {
   const auth = await getVerifiedAuthContext();
@@ -316,6 +317,11 @@ export default async function FeesPage() {
             </CardContent>
           </Card>
         </div>
+      </div>
+
+      {/* Double-Entry School General Ledger & Trial Balance */}
+      <div className="pt-4">
+        <DoubleEntryLedgerViewer />
       </div>
     </div>
   );

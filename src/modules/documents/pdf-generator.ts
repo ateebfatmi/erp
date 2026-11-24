@@ -574,3 +574,239 @@ export async function generateTransferCertificatePdf(data: TransferCertificateDa
 
   return await pdfDoc.save();
 }
+
+export interface SalarySlipPdfData {
+  schoolName: string;
+  schoolAddress: string;
+  affiliationNumber: string;
+  payslipNumber: string;
+  payPeriod: string;
+  employeeCode: string;
+  employeeName: string;
+  designation: string;
+  department: string;
+  joiningDate: string;
+  bankName: string;
+  bankAccount: string;
+  pan: string;
+  pfUan: string;
+  workingDays: number;
+  presentDays: number;
+  lopDays: number;
+  earnings: Array<{ title: string; amount: number }>;
+  deductions: Array<{ title: string; amount: number }>;
+  grossEarnings: number;
+  totalDeductions: number;
+  netPay: number;
+  netPayWords: string;
+}
+
+/**
+ * Generates an official, publication-grade Staff Salary Payslip PDF
+ */
+export async function generateSalarySlipPdf(data: SalarySlipPdfData): Promise<Uint8Array> {
+  const pdfDoc = await PDFDocument.create();
+  const page = pdfDoc.addPage([595.28, 841.89]); // A4 Portrait
+  const { width, height } = page.getSize();
+
+  const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+  const fontRegular = await pdfDoc.embedFont(StandardFonts.Helvetica);
+
+  // Outer border frame
+  page.drawRectangle({
+    x: 30,
+    y: 30,
+    width: width - 60,
+    height: height - 60,
+    borderColor: rgb(0.15, 0.25, 0.4),
+    borderWidth: 1.5,
+  });
+
+  // Header Banner Box
+  page.drawRectangle({
+    x: 32,
+    y: height - 110,
+    width: width - 64,
+    height: 78,
+    color: rgb(0.95, 0.97, 1.0),
+  });
+
+  page.drawText(data.schoolName.toUpperCase(), {
+    x: 50,
+    y: height - 60,
+    size: 15,
+    font: fontBold,
+    color: rgb(0.08, 0.15, 0.35),
+  });
+
+  page.drawText(`${data.schoolAddress} | Affiliation No: ${data.affiliationNumber}`, {
+    x: 50,
+    y: height - 78,
+    size: 9.5,
+    font: fontRegular,
+    color: rgb(0.3, 0.35, 0.45),
+  });
+
+  page.drawText(`SALARY PAYSLIP — ${data.payPeriod.toUpperCase()}`, {
+    x: 50,
+    y: height - 98,
+    size: 11,
+    font: fontBold,
+    color: rgb(0.15, 0.38, 0.92),
+  });
+
+  // Metadata Grid
+  const metaY = height - 135;
+  page.drawRectangle({
+    x: 45,
+    y: metaY - 80,
+    width: width - 90,
+    height: 90,
+    color: rgb(0.98, 0.99, 1.0),
+    borderColor: rgb(0.85, 0.88, 0.95),
+    borderWidth: 1,
+  });
+
+  // Column 1
+  page.drawText(`Emp Code:`, { x: 55, y: metaY - 15, size: 8.5, font: fontRegular, color: rgb(0.4, 0.4, 0.4) });
+  page.drawText(data.employeeCode, { x: 120, y: metaY - 15, size: 8.5, font: fontBold });
+
+  page.drawText(`Emp Name:`, { x: 55, y: metaY - 32, size: 8.5, font: fontRegular, color: rgb(0.4, 0.4, 0.4) });
+  page.drawText(data.employeeName, { x: 120, y: metaY - 32, size: 8.5, font: fontBold });
+
+  page.drawText(`Designation:`, { x: 55, y: metaY - 49, size: 8.5, font: fontRegular, color: rgb(0.4, 0.4, 0.4) });
+  page.drawText(data.designation, { x: 120, y: metaY - 49, size: 8.5, font: fontRegular });
+
+  page.drawText(`Department:`, { x: 55, y: metaY - 66, size: 8.5, font: fontRegular, color: rgb(0.4, 0.4, 0.4) });
+  page.drawText(data.department, { x: 120, y: metaY - 66, size: 8.5, font: fontRegular });
+
+  // Column 2
+  const col2X = 330;
+  page.drawText(`Bank A/C:`, { x: col2X, y: metaY - 15, size: 8.5, font: fontRegular, color: rgb(0.4, 0.4, 0.4) });
+  page.drawText(data.bankAccount, { x: col2X + 70, y: metaY - 15, size: 8.5, font: fontBold });
+
+  page.drawText(`PAN / UAN:`, { x: col2X, y: metaY - 32, size: 8.5, font: fontRegular, color: rgb(0.4, 0.4, 0.4) });
+  page.drawText(`${data.pan} / ${data.pfUan}`, { x: col2X + 70, y: metaY - 32, size: 8.5, font: fontRegular });
+
+  page.drawText(`Total Days:`, { x: col2X, y: metaY - 49, size: 8.5, font: fontRegular, color: rgb(0.4, 0.4, 0.4) });
+  page.drawText(`${data.workingDays} Days`, { x: col2X + 70, y: metaY - 49, size: 8.5, font: fontRegular });
+
+  page.drawText(`Days Paid:`, { x: col2X, y: metaY - 66, size: 8.5, font: fontRegular, color: rgb(0.4, 0.4, 0.4) });
+  page.drawText(`${data.presentDays} Days (LOP: ${data.lopDays})`, { x: col2X + 70, y: metaY - 66, size: 8.5, font: fontBold, color: rgb(0.1, 0.5, 0.2) });
+
+  // Two-column Table: Earnings on Left, Deductions on Right
+  const tableTopY = metaY - 105;
+  const colWidth = (width - 90) / 2;
+
+  // Header band
+  page.drawRectangle({
+    x: 45,
+    y: tableTopY - 20,
+    width: width - 90,
+    height: 22,
+    color: rgb(0.12, 0.22, 0.38),
+  });
+
+  page.drawText('EARNINGS', { x: 55, y: tableTopY - 14, size: 9, font: fontBold, color: rgb(1, 1, 1) });
+  page.drawText('AMOUNT (INR)', { x: 210, y: tableTopY - 14, size: 9, font: fontBold, color: rgb(1, 1, 1) });
+
+  page.drawText('DEDUCTIONS', { x: 45 + colWidth + 10, y: tableTopY - 14, size: 9, font: fontBold, color: rgb(1, 1, 1) });
+  page.drawText('AMOUNT (INR)', { x: width - 130, y: tableTopY - 14, size: 9, font: fontBold, color: rgb(1, 1, 1) });
+
+  // Rows
+  const maxRows = Math.max(data.earnings.length, data.deductions.length);
+  let rowY = tableTopY - 42;
+
+  for (let i = 0; i < maxRows; i++) {
+    const earn = data.earnings[i];
+    const ded = data.deductions[i];
+
+    // Background alternate row stripe
+    if (i % 2 === 1) {
+      page.drawRectangle({
+        x: 45,
+        y: rowY - 5,
+        width: width - 90,
+        height: 20,
+        color: rgb(0.97, 0.98, 0.99),
+      });
+    }
+
+    if (earn) {
+      page.drawText(earn.title, { x: 55, y: rowY, size: 8.5, font: fontRegular, color: rgb(0.2, 0.2, 0.2) });
+      page.drawText(earn.amount.toLocaleString('en-IN') + '.00', { x: 230, y: rowY, size: 8.5, font: fontBold });
+    }
+
+    if (ded) {
+      page.drawText(ded.title, { x: 45 + colWidth + 10, y: rowY, size: 8.5, font: fontRegular, color: rgb(0.2, 0.2, 0.2) });
+      page.drawText(ded.amount.toLocaleString('en-IN') + '.00', { x: width - 110, y: rowY, size: 8.5, font: fontBold, color: rgb(0.7, 0.1, 0.1) });
+    }
+
+    rowY -= 22;
+  }
+
+  // Totals Row
+  page.drawLine({
+    start: { x: 45, y: rowY + 5 },
+    end: { x: width - 45, y: rowY + 5 },
+    thickness: 1,
+    color: rgb(0.8, 0.8, 0.8),
+  });
+
+  page.drawText('GROSS EARNINGS:', { x: 55, y: rowY - 14, size: 9, font: fontBold });
+  page.drawText(`INR ${data.grossEarnings.toLocaleString('en-IN')}.00`, { x: 210, y: rowY - 14, size: 9, font: fontBold, color: rgb(0.1, 0.5, 0.2) });
+
+  page.drawText('TOTAL DEDUCTIONS:', { x: 45 + colWidth + 10, y: rowY - 14, size: 9, font: fontBold });
+  page.drawText(`INR ${data.totalDeductions.toLocaleString('en-IN')}.00`, { x: width - 120, y: rowY - 14, size: 9, font: fontBold, color: rgb(0.7, 0.1, 0.1) });
+
+  rowY -= 30;
+
+  // Net Pay Callout Banner
+  page.drawRectangle({
+    x: 45,
+    y: rowY - 35,
+    width: width - 90,
+    height: 42,
+    color: rgb(0.92, 0.96, 1.0),
+    borderColor: rgb(0.2, 0.45, 0.85),
+    borderWidth: 1.5,
+  });
+
+  page.drawText('NET TAKE-HOME PAYABLE:', {
+    x: 55,
+    y: rowY - 15,
+    size: 10,
+    font: fontBold,
+    color: rgb(0.08, 0.15, 0.35),
+  });
+
+  page.drawText(`INR ${data.netPay.toLocaleString('en-IN')}.00`, {
+    x: width - 200,
+    y: rowY - 15,
+    size: 14,
+    font: fontBold,
+    color: rgb(0.1, 0.45, 0.2),
+  });
+
+  page.drawText(`Amount in words: ${data.netPayWords}`, {
+    x: 55,
+    y: rowY - 28,
+    size: 8,
+    font: fontRegular,
+    color: rgb(0.3, 0.35, 0.4),
+  });
+
+  // Signatures
+  page.drawText('Bursar / Accounts Officer', { x: 60, y: 75, size: 9, font: fontBold, color: rgb(0.3, 0.3, 0.3) });
+  page.drawText('Principal / Institutional Seal', { x: 400, y: 75, size: 9, font: fontBold, color: rgb(0.3, 0.3, 0.3) });
+
+  page.drawText('* This is a computer-generated salary slip recognized under Indian Income Tax & EPFO guidelines.', {
+    x: 45,
+    y: 45,
+    size: 7.5,
+    font: fontRegular,
+    color: rgb(0.5, 0.5, 0.5),
+  });
+
+  return await pdfDoc.save();
+}
