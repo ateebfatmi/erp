@@ -1,6 +1,8 @@
 import React from 'react';
-import { Trophy, Medal } from 'lucide-react';
+import Link from 'next/link';
+import { Trophy, Medal, Award, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { HouseManager } from '@/components/modules/activities/house-manager';
 
 export default function AdminActivitiesPage() {
@@ -21,6 +23,13 @@ export default function AdminActivitiesPage() {
           <Badge className="bg-amber-100 text-amber-800 border-amber-200">
             4-House Statutory System
           </Badge>
+          <Link href="/portal/admin/activities/sahodaya">
+            <Button size="sm" variant="outline" className="text-xs flex items-center gap-1.5 border-blue-200 text-blue-700 hover:bg-blue-50">
+              <Award className="h-3.5 w-3.5" />
+              Sahodaya Cluster Desk
+              <ArrowRight className="h-3 w-3" />
+            </Button>
+          </Link>
         </div>
       </div>
 

@@ -156,6 +156,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'Campus Facility Desk', href: '/portal/admin/facilities', icon: Layers },
           { label: 'Campus Canteen POS', href: '/portal/admin/canteen', icon: UtensilsCrossed },
           { label: 'House Activities', href: '/portal/admin/activities', icon: Trophy },
+          { label: 'Sahodaya & Competitions', href: '/portal/admin/activities/sahodaya', icon: Award },
           { label: 'Staff & HRIS', href: '/portal/admin/staff', icon: Briefcase },
           { label: 'Faculty Biometric Muster', href: '/portal/admin/staff/attendance', icon: Fingerprint },
           { label: 'Teacher CPD (50-Hr)', href: '/portal/admin/staff/cpd', icon: Award },

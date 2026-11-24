@@ -30,6 +30,7 @@ import {
 } from '@/modules/activities/house-system';
 import { SportsMeetManager } from './sports-meet-manager';
 import { StudentCouncilManager } from './student-council-manager';
+import { SahodayaManager } from './sahodaya-manager';
 
 interface Props {
   role?: 'admin' | 'student';
@@ -44,7 +45,7 @@ export function HouseManager({ role = 'admin' }: Props) {
   const [thirdHouse, setThirdHouse] = useState<HouseName>('SHIVAJI');
   const [honoreeText, setHonoreeText] = useState('');
   const [feedback, setFeedback] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'cock-house' | 'sports-day' | 'student-council'>('cock-house');
+  const [activeTab, setActiveTab] = useState<'cock-house' | 'sports-day' | 'student-council' | 'sahodaya'>('cock-house');
 
   const standings = calculateMedalStandings(tallies);
 
@@ -128,12 +129,30 @@ export function HouseManager({ role = 'admin' }: Props) {
             Digital Ballot
           </span>
         </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('sahodaya')}
+          className={`pb-3 px-4 text-xs font-semibold flex items-center gap-2 border-b-2 transition-colors cursor-pointer ${
+            activeTab === 'sahodaya'
+              ? 'border-blue-600 text-blue-800'
+              : 'border-transparent text-slate-500 hover:text-slate-700'
+          }`}
+        >
+          <Award className="h-4 w-4" />
+          CBSE Sahodaya & Inter-School Hub
+          <span className="bg-amber-100 text-amber-800 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+            Cluster Hub
+          </span>
+        </button>
       </div>
 
       {activeTab === 'sports-day' ? (
         <SportsMeetManager role={role} />
       ) : activeTab === 'student-council' ? (
         <StudentCouncilManager role={role} />
+      ) : activeTab === 'sahodaya' ? (
+        <SahodayaManager />
       ) : (
         <>
           {/* Toast Feedback */}
