@@ -35,8 +35,9 @@ import {
   TransportRoute,
   LibraryBook,
 } from './types';
+import { createAdminSupabase } from './supabase';
 
-// In-memory operational store with fallback to live Supabase client when configured
+// Operational repository with live Supabase client & intelligent fallback
 class ErpRepository {
   private tenants: Tenant[] = [MOCK_TENANT];
   private campuses: Campus[] = [...MOCK_CAMPUSES];
@@ -55,26 +56,98 @@ class ErpRepository {
   private transportRoutes: TransportRoute[] = [...MOCK_TRANSPORT_ROUTES];
   private libraryBooks: LibraryBook[] = [...MOCK_LIBRARY_BOOKS];
 
+  private getSupabase() {
+    try {
+      return createAdminSupabase();
+    } catch {
+      return null;
+    }
+  }
+
   // 1. Tenancy & Campus
   async getTenantBySlug(slug: string): Promise<Tenant | null> {
-    const found = this.tenants.find((t) => t.slug === slug || t.id === slug);
-    return found || null;
+    const local = this.tenants.find((t) => t.slug === slug || t.id === slug);
+    if (local) return local;
+    if (process.env.NODE_ENV === 'test') return null;
+
+    const supabase = this.getSupabase();
+    if (supabase) {
+      try {
+        const { data } = await supabase
+          .from('tenants')
+          .select('*')
+          .or(`slug.eq.${slug},id.eq.${slug}`)
+          .maybeSingle();
+        if (data) return data as Tenant;
+      } catch {
+        // Fallback to local store
+      }
+    }
+    return null;
   }
 
   async getCampuses(tenantId: string): Promise<Campus[]> {
+    const supabase = this.getSupabase();
+    if (supabase) {
+      try {
+        const { data } = await supabase
+          .from('campuses')
+          .select('*')
+          .eq('tenant_id', tenantId);
+        if (data && data.length > 0) return data as Campus[];
+      } catch {
+        // Fallback
+      }
+    }
     return this.campuses.filter((c) => c.tenant_id === tenantId);
   }
 
   async getAcademicSessions(tenantId: string): Promise<AcademicSession[]> {
+    const supabase = this.getSupabase();
+    if (supabase) {
+      try {
+        const { data } = await supabase
+          .from('academic_sessions')
+          .select('*')
+          .eq('tenant_id', tenantId);
+        if (data && data.length > 0) return data as AcademicSession[];
+      } catch {
+        // Fallback
+      }
+    }
     return this.sessions.filter((s) => s.tenant_id === tenantId);
   }
 
   // 2. Classes & Academics
   async getClasses(tenantId: string): Promise<ClassGrade[]> {
+    const supabase = this.getSupabase();
+    if (supabase) {
+      try {
+        const { data } = await supabase
+          .from('classes')
+          .select('*')
+          .eq('tenant_id', tenantId)
+          .order('display_order', { ascending: true });
+        if (data && data.length > 0) return data as ClassGrade[];
+      } catch {
+        // Fallback
+      }
+    }
     return this.classes.filter((c) => c.tenant_id === tenantId);
   }
 
   async getSections(tenantId: string, classId?: string): Promise<Section[]> {
+    const supabase = this.getSupabase();
+    if (supabase) {
+      try {
+        let query = supabase.from('sections').select('*').eq('tenant_id', tenantId);
+        if (classId) query = query.eq('class_id', classId);
+        const { data } = await query;
+        if (data && data.length > 0) return data as Section[];
+      } catch {
+        // Fallback
+      }
+    }
     return this.sections.filter(
       (s) => s.tenant_id === tenantId && (!classId || s.class_id === classId)
     );
@@ -164,6 +237,24 @@ class ErpRepository {
       status: 'unpaid',
     };
     this.feeAllocations.push(feeAlloc);
+
+    // Also attempt live Supabase insertion if connected
+    const supabase = this.getSupabase();
+    if (supabase) {
+      try {
+        await supabase.from('students').insert({
+          id: newStudentId,
+          tenant_id: tenantId,
+          admission_number: payload.admissionNumber,
+          full_name: payload.fullName,
+          dob: payload.dob,
+          gender: payload.gender,
+          status: 'active',
+        });
+      } catch {
+        // Fallback
+      }
+    }
 
     return newEnrollment;
   }

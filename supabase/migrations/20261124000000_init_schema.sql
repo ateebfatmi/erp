@@ -663,7 +663,7 @@ DECLARE
 BEGIN
   FOR tbl IN
     SELECT tablename FROM pg_tables WHERE schemaname = 'public' 
-    AND tablename NOT IN ('users', 'platform_subscriptions', 'roles', 'permissions', 'role_permissions', 'student_guardians', 'fee_transaction_allocations', 'assignment_submissions')
+    AND tablename NOT IN ('tenants', 'users', 'platform_subscriptions', 'roles', 'permissions', 'role_permissions', 'student_guardians', 'fee_transaction_allocations', 'assignment_submissions')
   LOOP
     EXECUTE format('
       DROP POLICY IF EXISTS tenant_isolation_%I ON %I;
@@ -674,3 +674,8 @@ BEGIN
   END LOOP;
 END;
 $$;
+
+DROP POLICY IF EXISTS tenant_isolation_tenants ON tenants;
+CREATE POLICY tenant_isolation_tenants ON tenants
+  FOR ALL
+  USING (id = current_tenant_id());

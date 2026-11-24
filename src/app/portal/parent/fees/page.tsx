@@ -110,9 +110,11 @@ export default async function ParentFeesPage() {
                       <span className="font-bold text-slate-900 text-sm">
                         {formatCurrency(tx.total_amount)}
                       </span>
-                      <Button size="sm" variant="outline" className="text-xs gap-1 text-blue-600">
-                        <Download className="h-3 w-3" /> PDF Receipt
-                      </Button>
+                      <a href={`/api/documents/fee-receipt/${tx.id}`} target="_blank" rel="noreferrer">
+                        <Button size="sm" variant="outline" className="text-xs gap-1 text-blue-600 cursor-pointer">
+                          <Download className="h-3 w-3" /> PDF Receipt
+                        </Button>
+                      </a>
                     </div>
                   </div>
                 ))}

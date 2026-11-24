@@ -5,9 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Users, UserPlus, Search, Download, FileText, CheckCircle2 } from 'lucide-react';
+import { Users, UserPlus, Search, Download, FileText, CheckCircle2, CreditCard, FileCheck } from 'lucide-react';
 import { createStudentAction } from '@/modules/students/actions';
 import { formatDate } from '@/lib/utils';
+import { BulkImportModal } from '@/components/modules/students/bulk-import-modal';
 
 export default async function StudentsPage({
   searchParams,
@@ -63,9 +64,16 @@ export default async function StudentsPage({
                   />
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm" className="gap-1.5 text-xs">
-                    <Download className="h-3.5 w-3.5" /> Export CBSE CSV
-                  </Button>
+                  <BulkImportModal
+                    classId={classes[0]?.id || 'class-10'}
+                    sectionId={sections[0]?.id || 'sec-10-a'}
+                    campusId={campuses[0]?.id || 'campus-vk-01'}
+                  />
+                  <a href="/api/imports/template" download>
+                    <Button variant="outline" size="sm" className="gap-1.5 text-xs">
+                      <Download className="h-3.5 w-3.5" /> Template
+                    </Button>
+                  </a>
                 </div>
               </div>
             </CardHeader>
@@ -110,9 +118,18 @@ export default async function StudentsPage({
                           <Badge variant="success">Active</Badge>
                         </td>
                         <td className="py-3 px-3 text-right">
-                          <Button variant="ghost" size="sm" className="h-7 px-2 text-[11px] gap-1 text-blue-600">
-                            <FileText className="h-3 w-3" /> Profile
-                          </Button>
+                          <div className="flex items-center justify-end gap-1.5">
+                            <a href={`/api/documents/id-card/${enr.id}`} target="_blank" rel="noopener noreferrer">
+                              <Button variant="outline" size="sm" className="h-7 px-2 text-[11px] gap-1 text-slate-700 hover:text-blue-600 hover:border-blue-300">
+                                <CreditCard className="h-3 w-3 text-blue-600" /> ID Card
+                              </Button>
+                            </a>
+                            <a href={`/api/documents/transfer-certificate/${enr.id}`} target="_blank" rel="noopener noreferrer">
+                              <Button variant="outline" size="sm" className="h-7 px-2 text-[11px] gap-1 text-slate-700 hover:text-amber-600 hover:border-amber-300">
+                                <FileCheck className="h-3 w-3 text-amber-600" /> TC
+                              </Button>
+                            </a>
+                          </div>
                         </td>
                       </tr>
                     ))}

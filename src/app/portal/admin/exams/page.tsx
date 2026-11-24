@@ -47,10 +47,12 @@ export default async function ExamsPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="gap-1.5 text-xs">
-            <Download className="h-3.5 w-3.5" />
-            <span>Batch Print Report Cards</span>
-          </Button>
+          <a href="/api/documents/report-card/aarav" target="_blank" rel="noreferrer">
+            <Button variant="outline" size="sm" className="gap-1.5 text-xs cursor-pointer text-indigo-700 bg-indigo-50 border-indigo-200">
+              <Download className="h-3.5 w-3.5" />
+              <span>Print CBSE Report Card (PDF)</span>
+            </Button>
+          </a>
         </div>
       </div>
 
