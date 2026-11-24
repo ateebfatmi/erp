@@ -82,6 +82,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'Fee Payments', href: '/portal/parent/fees', icon: CreditCard },
           { label: 'Attendance History', href: '/portal/parent/attendance', icon: CalendarCheck },
           { label: 'Leave Applications', href: '/portal/parent/leave', icon: Calendar },
+          { label: 'Digital Consent & Trips', href: '/portal/parent/consent', icon: CheckCircle2 },
           { label: 'Report Cards', href: '/portal/parent/reports', icon: BookOpen },
           { label: 'Live Bus Tracking', href: '/portal/parent/transport', icon: Bus },
           { label: 'Smart Canteen', href: '/portal/parent/canteen', icon: UtensilsCrossed },
@@ -141,6 +142,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'Circulars & Notices', href: '/portal/admin/notices', icon: Bell },
           { label: 'Communication Hub', href: '/portal/admin/communication', icon: Bell },
           { label: 'Grievance Cell', href: '/portal/admin/helpdesk', icon: LifeBuoy },
+          { label: 'Parental Consent Desk', href: '/portal/admin/consent', icon: CheckCircle2 },
           { label: 'Reports & Analytics', href: '/portal/admin/reports', icon: ClipboardList },
           { label: 'School Settings', href: '/portal/admin/settings', icon: Settings },
         ];
