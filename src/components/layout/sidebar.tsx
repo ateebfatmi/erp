@@ -35,6 +35,7 @@ import {
   Layers,
   Award,
   Compass,
+  MapPin,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -132,6 +133,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'House Activities', href: '/portal/admin/activities', icon: Trophy },
           { label: 'Staff & HRIS', href: '/portal/admin/staff', icon: Briefcase },
           { label: 'Transport Fleet', href: '/portal/admin/transport', icon: Bus },
+          { label: 'Bus Routes & Stops', href: '/portal/admin/transport/routes', icon: MapPin },
           { label: 'Fleet Maintenance', href: '/portal/admin/transport/maintenance', icon: Wrench },
           { label: 'Library Catalog', href: '/portal/admin/library', icon: Library },
           { label: 'Inventory & Assets', href: '/portal/admin/inventory', icon: Boxes },
