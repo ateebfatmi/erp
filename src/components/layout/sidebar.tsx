@@ -25,6 +25,8 @@ import {
   Building2,
   Sparkles,
   ClipboardList,
+  HeartPulse,
+  CheckCircle2,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -54,6 +56,8 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'Daily Attendance', href: '/portal/teacher/attendance', icon: CalendarCheck },
           { label: 'Gradebook & Marks', href: '/portal/teacher/marks', icon: BookOpen },
           { label: 'Homework & Tasks', href: '/portal/teacher/homework', icon: FileText },
+          { label: 'Syllabus Tracker', href: '/portal/teacher/syllabus', icon: ClipboardList },
+          { label: 'PTM Consultations', href: '/portal/teacher/ptm', icon: Users },
           { label: 'My Timetable', href: '/portal/teacher/timetable', icon: Calendar },
         ];
 
@@ -63,6 +67,8 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'Fee Payments', href: '/portal/parent/fees', icon: CreditCard },
           { label: 'Attendance History', href: '/portal/parent/attendance', icon: CalendarCheck },
           { label: 'Report Cards', href: '/portal/parent/reports', icon: BookOpen },
+          { label: 'PTM Slot Booking', href: '/portal/parent/ptm', icon: Users },
+          { label: 'Circulars & Notices', href: '/portal/parent/notices', icon: Bell },
           { label: 'Daily Timetable', href: '/portal/parent/timetable', icon: Calendar },
         ];
 
@@ -70,8 +76,9 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
         return [
           { label: 'Student Dashboard', href: '/portal/student', icon: LayoutDashboard },
           { label: 'My Timetable', href: '/portal/student/timetable', icon: Calendar },
-          { label: 'Assignments', href: '/portal/student/homework', icon: FileText },
+          { label: 'Assignments & CBT', href: '/portal/student/homework', icon: FileText },
           { label: 'Exam Results', href: '/portal/student/results', icon: BookOpen },
+          { label: 'Circulars & Dates', href: '/portal/student/notices', icon: Bell },
           { label: 'Attendance Record', href: '/portal/student/attendance', icon: CalendarCheck },
         ];
 
@@ -80,15 +87,20 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
         return [
           { label: 'Executive Dashboard', href: '/portal/admin', icon: LayoutDashboard },
           { label: 'Students & SIS', href: '/portal/admin/students', icon: Users },
+          { label: 'No-Dues Clearance', href: '/portal/admin/students/clearance', icon: CheckCircle2 },
           { label: 'Admissions Desk', href: '/portal/admin/admissions', icon: UserCheck },
           { label: 'Attendance Hub', href: '/portal/admin/attendance', icon: CalendarCheck },
           { label: 'Fees & Collections', href: '/portal/admin/fees', icon: CreditCard },
           { label: 'Exams & Grading', href: '/portal/admin/exams', icon: BookOpen },
+          { label: 'Syllabus Oversight', href: '/portal/admin/syllabus', icon: BookOpen },
           { label: 'Master Timetable', href: '/portal/admin/timetable', icon: Calendar },
+          { label: 'Health & Infirmary', href: '/portal/admin/health', icon: HeartPulse },
+          { label: 'Campus Gate Security', href: '/portal/admin/security', icon: ShieldAlert },
           { label: 'Staff & HRIS', href: '/portal/admin/staff', icon: Briefcase },
           { label: 'Transport Fleet', href: '/portal/admin/transport', icon: Bus },
           { label: 'Library Catalog', href: '/portal/admin/library', icon: Library },
           { label: 'Inventory & Assets', href: '/portal/admin/inventory', icon: Boxes },
+          { label: 'Circulars & Notices', href: '/portal/admin/notices', icon: Bell },
           { label: 'Communication Hub', href: '/portal/admin/communication', icon: Bell },
           { label: 'Reports & Analytics', href: '/portal/admin/reports', icon: ClipboardList },
           { label: 'School Settings', href: '/portal/admin/settings', icon: Settings },
