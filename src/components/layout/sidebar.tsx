@@ -45,6 +45,8 @@ import {
   ShieldCheck,
   Network,
   Languages,
+  Flame,
+  Cpu,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -124,6 +126,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'House Championship', href: '/portal/student/activities', icon: Trophy },
           { label: 'EBSB & Bhasha Sangam', href: '/portal/student/ebsb', icon: Languages },
           { label: '10 Bagless Days', href: '/portal/student/bagless-days', icon: Sparkles },
+          { label: 'Atal Tinkering Lab (ATL)', href: '/portal/student/atl', icon: Cpu },
           { label: 'Digital Library', href: '/portal/student/library', icon: Library },
           { label: 'My Health Card', href: '/portal/student/health', icon: HeartPulse },
           { label: 'Wellness & Question Box', href: '/portal/student/health/wellness', icon: Sparkles },
@@ -161,10 +164,12 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           { label: 'Academic Calendar (220-Day)', href: '/portal/admin/calendar', icon: Calendar },
           { label: '10 Bagless Days Hub', href: '/portal/admin/academics/bagless-days', icon: Sparkles },
           { label: 'Career & CUET Cell', href: '/portal/admin/academics/career-guidance', icon: Compass },
+          { label: 'Atal Tinkering Lab (ATL)', href: '/portal/admin/academics/atl', icon: Cpu },
           { label: 'Arrangement Matrix', href: '/portal/admin/staff/substitution', icon: Sparkles },
           { label: 'Health & Infirmary', href: '/portal/admin/health', icon: HeartPulse },
           { label: 'Health & Wellness (SHWP)', href: '/portal/admin/health/wellness', icon: Sparkles },
           { label: 'Campus Gate Security', href: '/portal/admin/security', icon: ShieldAlert },
+          { label: 'Fire Safety & Mock Drills', href: '/portal/admin/security/disaster-management', icon: Flame },
           { label: 'Hostel & Residence', href: '/portal/admin/hostel', icon: Bed },
           { label: 'Campus Facility Desk', href: '/portal/admin/facilities', icon: Layers },
           { label: 'Campus Canteen POS', href: '/portal/admin/canteen', icon: UtensilsCrossed },
