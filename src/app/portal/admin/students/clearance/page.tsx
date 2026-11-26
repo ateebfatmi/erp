@@ -1,10 +1,6 @@
 import React from 'react';
-import { NoDuesManager } from '@/components/modules/students/no-dues-manager';
+import { UnifiedStudentsHub } from '@/components/modules/students/unified-students-hub';
 
 export default function StudentClearancePage() {
-  return (
-    <div className="space-y-6">
-      <NoDuesManager />
-    </div>
-  );
+  return <UnifiedStudentsHub initialTab="clearance" />;
 }

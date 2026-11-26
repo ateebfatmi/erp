@@ -1,10 +1,6 @@
 import React from 'react';
-import { InclusiveResourceRoomManager } from '@/components/modules/academics/inclusive-resource-room-manager';
+import { UnifiedStudentsHub } from '@/components/modules/students/unified-students-hub';
 
 export default function AdminResourceRoomPage() {
-  return (
-    <div className="space-y-6">
-      <InclusiveResourceRoomManager role="admin" />
-    </div>
-  );
+  return <UnifiedStudentsHub initialTab="resource-room" />;
 }

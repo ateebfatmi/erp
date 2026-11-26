@@ -9,6 +9,7 @@ import { Users, UserPlus, Search, Download, FileText, CheckCircle2, CreditCard, 
 import { createStudentAction } from '@/modules/students/actions';
 import { formatDate } from '@/lib/utils';
 import { BulkImportModal } from '@/components/modules/students/bulk-import-modal';
+import { UnifiedStudentsHub } from '@/components/modules/students/unified-students-hub';
 
 export default async function StudentsPage({
   searchParams,
@@ -25,29 +26,9 @@ export default async function StudentsPage({
     classId: resolvedParams.classId,
   });
 
-  return (
+  const directoryContent = (
     <div className="space-y-6">
-      {/* Header bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-xl border border-slate-200 shadow-xs">
-        <div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <Users className="h-5 w-5 text-blue-600" />
-            Student Information System (SIS)
-          </h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Maintain permanent student identities, enrollments, roll numbers, and academic history.
-          </p>
-        </div>
-
-        {/* Admission Form Trigger / Summary */}
-        <div className="flex items-center gap-2">
-          <Badge variant="success">
-            {enrollments.length} Active Students
-          </Badge>
-        </div>
-      </div>
-
-      {/* Main Grid: Directory + Admission Form */}
+      {/* Directory Grid: Directory + Admission Form */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Student Directory Table (2 spans) */}
         <div className="lg:col-span-2 space-y-4">
@@ -180,7 +161,7 @@ export default async function StudentsPage({
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <label className="block text-xs font-medium text-slate-700 mb-1">
-                      Admission Number *
+                    Admission Number *
                     </label>
                     <Input
                       name="admissionNumber"
@@ -283,5 +264,12 @@ export default async function StudentsPage({
         </div>
       </div>
     </div>
+  );
+
+  return (
+    <UnifiedStudentsHub
+      initialTab="directory"
+      directoryContent={directoryContent}
+    />
   );
 }

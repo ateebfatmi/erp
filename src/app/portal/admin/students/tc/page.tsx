@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { TcRegistryManager } from '@/components/modules/students/tc-registry-manager';
+import { UnifiedStudentsHub } from '@/components/modules/students/unified-students-hub';
 
 export const metadata: Metadata = {
   title: 'Statutory Transfer Certificate (TC) Desk | VidyaOS Admin',
@@ -7,9 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function AdminTcRegistryPage() {
-  return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <TcRegistryManager viewMode="admin" />
-    </div>
-  );
+  return <UnifiedStudentsHub initialTab="tc" />;
 }
