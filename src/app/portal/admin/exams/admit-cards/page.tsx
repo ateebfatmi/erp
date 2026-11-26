@@ -1,10 +1,6 @@
 import React from 'react';
-import { AdmitCardManager } from '@/components/modules/assessment/admit-card-manager';
+import { UnifiedExamHub } from '@/components/modules/assessment/unified-exam-hub';
 
 export default function AdminAdmitCardsPage() {
-  return (
-    <div className="space-y-6">
-      <AdmitCardManager role="admin" />
-    </div>
-  );
+  return <UnifiedExamHub initialTab="admit-cards" />;
 }

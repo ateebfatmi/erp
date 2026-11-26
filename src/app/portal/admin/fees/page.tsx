@@ -22,6 +22,25 @@ export default async function FeesPage() {
     0
   );
 
+  async function handleCashierPayment(formData: FormData) {
+    'use server';
+    const allocationId = String(formData.get('allocationId'));
+    const amount = Number(formData.get('amount') || 0);
+    const paymentMethod = String(formData.get('paymentMethod')) as any;
+    const referenceNumber = String(formData.get('referenceNumber') || '');
+
+    const currentAlloc = feeAllocations.find((a) => a.id === allocationId);
+    if (!currentAlloc) return;
+
+    await recordFeePaymentAction({
+      enrollmentId: currentAlloc.enrollment_id,
+      allocationIds: [currentAlloc.id],
+      amount,
+      paymentMethod,
+      referenceNumber,
+    });
+  }
+
   const collectionsContent = (
     <div className="space-y-6">
       {/* KPI Cards */}
@@ -61,36 +80,37 @@ export default async function FeesPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-medium text-slate-500">
-              Payment Gateway Health
+              Active Payment Gateway
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-700 flex items-center gap-1.5">
-              <ShieldCheck className="h-5 w-5 text-blue-600" /> 99.98%
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-bold text-slate-900">Razorpay Commercial</span>
+              <Badge variant="success">Active</Badge>
             </div>
             <p className="text-[11px] text-slate-500 mt-1">
-              Webhook HMAC Verification Enabled
+              UPI, NetBanking, Debit/Credit Cards Enabled
             </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Main Grid: Allocations & Counter */}
+      {/* Main Grid: Pending Allocations & Offline Entry */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column: Student Fee Allocations */}
-        <div className="lg:col-span-2 space-y-4">
+        {/* Left 2 Columns: Table of Student Allocations */}
+        <div className="lg:col-span-2 space-y-6">
           <Card>
             <CardHeader className="pb-3 border-b border-slate-100 flex flex-row items-center justify-between">
               <div>
                 <CardTitle className="text-sm font-bold text-slate-800">
-                  Student Fee Ledger Allocations
+                  Student Fee Allocation & Demand Register
                 </CardTitle>
                 <p className="text-xs text-slate-500">
-                  Quarterly tuition, transport, and lab fee dues per enrolled student.
+                  Real-time status of academic year fee installments and concessions.
                 </p>
               </div>
               <Badge variant="outline">
-                {feeAllocations.length} Active Accounts
+                {feeAllocations.length} Active Records
               </Badge>
             </CardHeader>
             <CardContent className="p-0">
@@ -98,8 +118,8 @@ export default async function FeesPage() {
                 <table className="w-full text-xs text-left">
                   <thead className="bg-slate-50 text-slate-500 border-b border-slate-100">
                     <tr>
-                      <th className="px-4 py-2.5 font-medium">Student / Admission No</th>
-                      <th className="px-4 py-2.5 font-medium">Structure</th>
+                      <th className="px-4 py-2.5 font-medium">Student / Allocation</th>
+                      <th className="px-4 py-2.5 font-medium">Fee Title</th>
                       <th className="px-4 py-2.5 font-medium">Due Amount</th>
                       <th className="px-4 py-2.5 font-medium">Due Date</th>
                       <th className="px-4 py-2.5 font-medium">Status</th>
@@ -107,20 +127,20 @@ export default async function FeesPage() {
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {feeAllocations.map((alloc) => {
-                      const enrollment = enrollments.find((e) => e.student_id === alloc.student_id);
+                      const enrollment = enrollments.find((e) => e.id === alloc.enrollment_id);
                       const balance = alloc.due_amount - alloc.discount_amount - alloc.paid_amount;
                       return (
                         <tr key={alloc.id} className="hover:bg-slate-50/50">
                           <td className="px-4 py-3">
                             <div className="font-semibold text-slate-800">
-                              {alloc.student_id}
+                              {enrollment?.student?.full_name || alloc.enrollment_id}
                             </div>
                             <div className="text-[11px] text-slate-400">
-                              Class: {enrollment?.class_id || 'Class 10-A'}
+                              Adm: {enrollment?.student?.admission_number || 'N/A'}
                             </div>
                           </td>
                           <td className="px-4 py-3 text-slate-600">
-                            {alloc.fee_structure_id}
+                            {alloc.title || alloc.structure_id}
                           </td>
                           <td className="px-4 py-3">
                             <span className="font-bold text-slate-900">
@@ -139,7 +159,7 @@ export default async function FeesPage() {
                             {alloc.status === 'paid' && (
                               <Badge variant="success">Fully Settled</Badge>
                             )}
-                            {alloc.status === 'partial' && (
+                            {alloc.status === 'partially_paid' && (
                               <Badge variant="warning">Partially Paid</Badge>
                             )}
                             {alloc.status === 'unpaid' && (
@@ -183,7 +203,7 @@ export default async function FeesPage() {
                           {tx.receipt_number}
                         </td>
                         <td className="px-4 py-3 text-slate-500">
-                          {formatDate(tx.created_at)}
+                          {formatDate(tx.recorded_at)}
                         </td>
                         <td className="px-4 py-3">
                           <span className="capitalize px-2 py-0.5 bg-slate-100 text-slate-700 rounded text-[11px] font-medium">
@@ -191,7 +211,7 @@ export default async function FeesPage() {
                           </span>
                         </td>
                         <td className="px-4 py-3 font-mono text-[11px] text-slate-500">
-                          {tx.transaction_reference || 'N/A'}
+                          {tx.reference_number || tx.receipt_number}
                         </td>
                         <td className="px-4 py-3 font-bold text-emerald-600">
                           {formatCurrency(tx.total_amount)}
@@ -228,7 +248,7 @@ export default async function FeesPage() {
               </p>
             </CardHeader>
             <CardContent>
-              <form action={recordFeePaymentAction} className="space-y-3">
+              <form action={handleCashierPayment} className="space-y-3">
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-1">
                     Select Fee Allocation
@@ -241,11 +261,15 @@ export default async function FeesPage() {
                     <option value="">-- Choose Pending Account --</option>
                     {feeAllocations
                       .filter((a) => a.status !== 'paid')
-                      .map((a) => (
-                        <option key={a.id} value={a.id}>
-                          {a.student_id} — Bal: {formatCurrency(a.due_amount - a.discount_amount - a.paid_amount)}
-                        </option>
-                      ))}
+                      .map((a) => {
+                        const enrollment = enrollments.find((e) => e.id === a.enrollment_id);
+                        return (
+                          <option key={a.id} value={a.id}>
+                            {enrollment?.student?.full_name || a.title || 'Student'} — Bal:{' '}
+                            {formatCurrency(a.due_amount - a.discount_amount - a.paid_amount)}
+                          </option>
+                        );
+                      })}
                   </select>
                 </div>
 

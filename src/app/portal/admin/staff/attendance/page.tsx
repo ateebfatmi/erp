@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { StaffAttendanceManager } from '@/components/modules/staff/staff-attendance-manager';
+import { UnifiedStaffHub } from '@/components/modules/staff/unified-staff-hub';
 
 export const metadata: Metadata = {
   title: 'Faculty Biometric Attendance & Muster Roll | VidyaOS Admin',
@@ -7,9 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function AdminStaffAttendancePage() {
-  return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <StaffAttendanceManager viewMode="admin" />
-    </div>
-  );
+  return <UnifiedStaffHub initialTab="attendance" />;
 }

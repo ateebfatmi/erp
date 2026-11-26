@@ -13,6 +13,8 @@ const badgeVariants = cva(
         warning: 'bg-amber-50 text-amber-700 border border-amber-200',
         destructive: 'bg-rose-50 text-rose-700 border border-rose-200',
         outline: 'text-slate-800 border border-slate-200',
+        indigo: 'bg-indigo-50 text-indigo-700 border border-indigo-200',
+        purple: 'bg-purple-50 text-purple-700 border border-purple-200',
       },
     },
     defaultVariants: {

@@ -51,11 +51,11 @@ export function UnifiedInventoryHub({ initialTab = 'assets' }: UnifiedInventoryH
       />
 
       {/* Tab Panels */}
-      {activeTab === 'assets' && <InventoryManager role="admin" />}
+      {activeTab === 'assets' && <InventoryManager />}
 
       {activeTab === 'requisitions' && <StockRequisitionManager role="admin" />}
 
-      {activeTab === 'store' && <SchoolStoreManager role="admin" />}
+      {activeTab === 'store' && <SchoolStoreManager viewMode="admin" />}
     </div>
   );
 }
