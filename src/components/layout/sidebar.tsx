@@ -95,6 +95,13 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
         title: 'Executive',
         items: [
           { label: 'Executive Dashboard', href: '/portal/admin', icon: LayoutDashboard },
+          {
+            label: 'Approvals & Governance',
+            href: '/portal/admin/approvals',
+            icon: CheckCircle2,
+            badge: 'Workflow',
+            searchKeywords: ['approvals', 'leaves', 'concessions', 'indents', 'tc', 'signoff'],
+          },
         ],
       },
       {
@@ -102,6 +109,20 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
         title: 'Academics',
         icon: BookOpen,
         items: [
+          {
+            label: 'Academic Masters Setup',
+            href: '/portal/admin/academics/setup',
+            icon: Building2,
+            badge: 'Classes & Houses',
+            searchKeywords: ['classes', 'sections', 'subjects', 'houses', 'rooms', 'smart class'],
+          },
+          {
+            label: 'Homework & Evaluation',
+            href: '/portal/admin/homework',
+            icon: FileText,
+            badge: 'Tasks',
+            searchKeywords: ['homework', 'assignments', 'grading', 'submissions', 'evaluation'],
+          },
           {
             label: 'Lesson Plans & Pedagogy',
             href: '/portal/admin/academics/lesson-plans',
@@ -233,6 +254,20 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
         icon: Layers,
         items: [
           {
+            label: 'Front Office & Visitors',
+            href: '/portal/admin/front-office',
+            icon: ShieldCheck,
+            badge: 'Gate Pass',
+            searchKeywords: ['visitors', 'gate pass', 'phone log', 'call register', 'postal', 'dispatch', 'enquiries'],
+          },
+          {
+            label: 'Institutional Holidays',
+            href: '/portal/admin/holidays',
+            icon: Calendar,
+            badge: 'Gazette',
+            searchKeywords: ['holidays', 'gazetted', 'vacations', 'attendance sync'],
+          },
+          {
             label: 'Transport & Fleet Suite',
             href: '/portal/admin/transport',
             icon: Bus,
@@ -327,6 +362,13 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
         title: 'Communications',
         icon: Bell,
         items: [
+          {
+            label: 'Certificate Studio',
+            href: '/portal/admin/certificates',
+            icon: Award,
+            badge: 'Designer',
+            searchKeywords: ['certificates', 'bonafide', 'merit', 'templates', 'custom design', 'print'],
+          },
           {
             label: 'Noticeboard & Circulars',
             href: '/portal/admin/notices',
