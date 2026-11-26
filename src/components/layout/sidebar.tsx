@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -50,6 +50,7 @@ import {
   Cpu,
   Search,
   X,
+  Check,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -62,6 +63,8 @@ interface NavItem {
   label: string;
   href: string;
   icon: React.ElementType;
+  badge?: string;
+  searchKeywords?: string[];
 }
 
 interface NavSection {
@@ -75,147 +78,292 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
   const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState('');
   const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
+  const [selectedCampus, setSelectedCampus] = useState('Main Campus (VK-01)');
+  const [isCampusMenuOpen, setIsCampusMenuOpen] = useState(false);
 
-  const toggleSection = (sectionId: string) => {
-    setCollapsedSections((prev) => ({
-      ...prev,
-      [sectionId]: !prev[sectionId],
-    }));
-  };
+  const campuses = [
+    { id: 'vk-01', name: 'Main Campus (VK-01)', code: 'VK-01', tag: 'Primary' },
+    { id: 'rk-02', name: 'Junior Wing (RK-02)', code: 'RK-02', tag: 'Grades 1-5' },
+    { id: 'dw-03', name: 'Sports Academy (DW-03)', code: 'DW-03', tag: 'Athletics' },
+  ];
 
-  // Grouped Navigation Schema for Admin
+  // Curated, User-Friendly Admin Navigation Sections
   const adminSections: NavSection[] = useMemo(
     () => [
       {
         id: 'overview',
-        title: 'Overview',
+        title: 'Executive',
         items: [
           { label: 'Executive Dashboard', href: '/portal/admin', icon: LayoutDashboard },
         ],
       },
       {
         id: 'academics',
-        title: 'Academics & Pedagogy',
+        title: 'Academics',
         icon: BookOpen,
         items: [
-          { label: 'NEP Lesson Plans (HOD)', href: '/portal/admin/academics/lesson-plans', icon: Sparkles },
-          { label: 'Teaching Diaries', href: '/portal/admin/academics/diary', icon: BookOpen },
-          { label: '10 Bagless Days Hub', href: '/portal/admin/academics/bagless-days', icon: Sparkles },
-          { label: 'Atal Tinkering Lab (ATL)', href: '/portal/admin/academics/atl', icon: Cpu },
-          { label: 'Hubs of Learning (HoL)', href: '/portal/admin/academics/hubs-of-learning', icon: Network },
-          { label: 'Career & CUET Cell', href: '/portal/admin/academics/career-guidance', icon: Compass },
-          { label: 'Arrangement Matrix', href: '/portal/admin/staff/substitution', icon: Sparkles },
-          { label: 'Master Timetable', href: '/portal/admin/timetable', icon: Calendar },
-          { label: 'Academic Calendar (220-Day)', href: '/portal/admin/calendar', icon: Calendar },
-          { label: 'Syllabus Oversight', href: '/portal/admin/syllabus', icon: ClipboardList },
+          {
+            label: 'Lesson Plans & Pedagogy',
+            href: '/portal/admin/academics/lesson-plans',
+            icon: Sparkles,
+            searchKeywords: ['diaries', 'hod', 'lesson plan', 'pedagogy'],
+          },
+          {
+            label: 'Master Timetable',
+            href: '/portal/admin/timetable',
+            icon: Calendar,
+            searchKeywords: ['periods', 'schedule', 'conflict'],
+          },
+          {
+            label: 'Academic Calendar',
+            href: '/portal/admin/calendar',
+            icon: CalendarCheck,
+            badge: '220-Day',
+            searchKeywords: ['holidays', 'events', 'terms'],
+          },
+          {
+            label: 'Syllabus Tracker',
+            href: '/portal/admin/syllabus',
+            icon: ClipboardList,
+            searchKeywords: ['curriculum', 'completion'],
+          },
+          {
+            label: 'Innovation Lab (ATL)',
+            href: '/portal/admin/academics/atl',
+            icon: Cpu,
+            searchKeywords: ['atal tinkering', 'robotics', 'stem'],
+          },
+          {
+            label: 'Bagless Days & HoL',
+            href: '/portal/admin/academics/bagless-days',
+            icon: Award,
+            searchKeywords: ['10 bagless days', 'hubs of learning', 'vocational'],
+          },
         ],
       },
       {
         id: 'exams',
-        title: 'Exams & Assessment',
+        title: 'Examinations',
         icon: FileText,
         items: [
-          { label: 'Board LOC Pariksha Desk', href: '/portal/admin/exams/loc', icon: ShieldCheck },
-          { label: '360° HPC Cell', href: '/portal/admin/exams/hpc', icon: Sparkles },
-          { label: 'Question Bank', href: '/portal/admin/exams/question-bank', icon: BookOpen },
-          { label: 'Admit Cards (Roll Slips)', href: '/portal/admin/exams/admit-cards', icon: FileText },
-          { label: 'Exams & Grading', href: '/portal/admin/exams', icon: BookOpen },
+          {
+            label: 'Assessment & Exam Suite',
+            href: '/portal/admin/exams',
+            icon: Award,
+            badge: 'CBSE Desk',
+            searchKeywords: [
+              'marks',
+              'grading',
+              'loc',
+              'pariksha sangam',
+              'hpc',
+              'holistic progress',
+              'question bank',
+              'blueprints',
+              'admit cards',
+              'hall tickets',
+            ],
+          },
         ],
       },
       {
         id: 'students',
-        title: 'Students & Inclusion',
+        title: 'Students & Admissions',
         icon: Users,
         items: [
-          { label: 'Students & SIS', href: '/portal/admin/students', icon: Users },
-          { label: 'CWSN & Inclusive IEP', href: '/portal/admin/students/cwsn', icon: HeartHandshake },
-          { label: 'Inclusive Resource Room', href: '/portal/admin/students/resource-room', icon: Building2 },
-          { label: 'Admissions Desk', href: '/portal/admin/admissions', icon: UserCheck },
-          { label: 'RTE 25% EWS Quota', href: '/portal/admin/admissions/rte', icon: Scale },
-          { label: 'Transfer Certificates (TC)', href: '/portal/admin/students/tc', icon: Award },
-          { label: 'No-Dues Clearance', href: '/portal/admin/students/clearance', icon: CheckCircle2 },
-          { label: 'House & Discipline', href: '/portal/admin/students/discipline', icon: Trophy },
-          { label: 'Alumni Network', href: '/portal/admin/alumni', icon: GraduationCap },
-        ],
-      },
-      {
-        id: 'safety',
-        title: 'Safety, Health & Compliance',
-        icon: ShieldAlert,
-        items: [
-          { label: 'Campus Gate Security', href: '/portal/admin/security', icon: ShieldAlert },
-          { label: 'Fire Safety & Mock Drills', href: '/portal/admin/security/disaster-management', icon: Flame },
-          { label: 'Health & Infirmary', href: '/portal/admin/health', icon: HeartPulse },
-          { label: 'Health & Wellness (SHWP)', href: '/portal/admin/health/wellness', icon: Sparkles },
+          {
+            label: 'Student SIS & Lifecycle',
+            href: '/portal/admin/students',
+            icon: Users,
+            badge: 'Unified',
+            searchKeywords: [
+              'sis',
+              'enrollment',
+              'tc',
+              'transfer certificate',
+              'clearance',
+              'no dues',
+              'discipline',
+              'merits',
+              'cwsn',
+              'iep',
+              'resource room',
+            ],
+          },
+          {
+            label: 'Admissions & 25% RTE',
+            href: '/portal/admin/admissions',
+            icon: UserCheck,
+            searchKeywords: ['leads', 'crm', 'rte', 'ews quota', 'applications'],
+          },
+          {
+            label: 'Alumni Network',
+            href: '/portal/admin/alumni',
+            icon: GraduationCap,
+            searchKeywords: ['graduates', 'mentorship', 'donations'],
+          },
         ],
       },
       {
         id: 'fees',
-        title: 'Fees & Collections',
+        title: 'Fees & Accounts',
         icon: CreditCard,
         items: [
-          { label: 'Fees & Collections', href: '/portal/admin/fees', icon: CreditCard },
-          { label: 'Fee Concessions', href: '/portal/admin/fees/concessions', icon: Percent },
+          {
+            label: 'Fees & Accounting Hub',
+            href: '/portal/admin/fees',
+            icon: CreditCard,
+            badge: 'Tally Sync',
+            searchKeywords: [
+              'collections',
+              'cashier',
+              'concessions',
+              'scholarships',
+              'ledger',
+              'tally bridge',
+              'razorpay',
+              'receipts',
+            ],
+          },
         ],
       },
       {
         id: 'operations',
-        title: 'Campus Operations & Fleet',
+        title: 'Campus & Fleet',
         icon: Layers,
         items: [
-          { label: 'Attendance Hub', href: '/portal/admin/attendance', icon: CalendarCheck },
-          { label: 'Transport Fleet Suite', href: '/portal/admin/transport', icon: Bus },
-          { label: 'Bus Routes & Stops', href: '/portal/admin/transport/routes', icon: MapPin },
-          { label: 'Fleet Maintenance', href: '/portal/admin/transport/maintenance', icon: Wrench },
-          { label: 'Trip Sheets & Fuel', href: '/portal/admin/transport/trips', icon: Gauge },
-          { label: 'Inventory & Store Suite', href: '/portal/admin/inventory', icon: Boxes },
-          { label: 'Store Indents & Issues', href: '/portal/admin/inventory/requisition', icon: Boxes },
-          { label: 'Campus Book & Uniform Store', href: '/portal/admin/inventory/store', icon: ShoppingBag },
-          { label: 'Library Catalog', href: '/portal/admin/library', icon: Library },
-          { label: 'Campus Facility Desk', href: '/portal/admin/facilities', icon: Layers },
-          { label: 'Campus Canteen POS', href: '/portal/admin/canteen', icon: UtensilsCrossed },
-          { label: 'Hostel & Residence', href: '/portal/admin/hostel', icon: Bed },
+          {
+            label: 'Transport & Fleet Suite',
+            href: '/portal/admin/transport',
+            icon: Bus,
+            badge: 'Live GPS',
+            searchKeywords: [
+              'gps',
+              'telematics',
+              'bus routes',
+              'stops',
+              'fleet maintenance',
+              'rto fitness',
+              'diesel',
+              'trip sheets',
+            ],
+          },
+          {
+            label: 'Inventory & Campus Store',
+            href: '/portal/admin/inventory',
+            icon: Boxes,
+            searchKeywords: [
+              'assets',
+              'depreciation',
+              'indents',
+              'requisitions',
+              'bookstore',
+              'uniform pos',
+            ],
+          },
+          {
+            label: 'Attendance Operations',
+            href: '/portal/admin/attendance',
+            icon: CalendarCheck,
+            searchKeywords: ['daily attendance', 'rfid', 'absentees'],
+          },
+          {
+            label: 'Library Management',
+            href: '/portal/admin/library',
+            icon: Library,
+            searchKeywords: ['books', 'isbn', 'catalog', 'circulation'],
+          },
+          {
+            label: 'Facilities & Campus POS',
+            href: '/portal/admin/facilities',
+            icon: Layers,
+            searchKeywords: ['rooms', 'auditorium', 'booking', 'canteen pos', 'hostel'],
+          },
         ],
       },
       {
         id: 'staff',
-        title: 'Staff & Human Resources',
+        title: 'Faculty & HR',
         icon: Briefcase,
         items: [
-          { label: 'Staff & HRIS', href: '/portal/admin/staff', icon: Briefcase },
-          { label: 'Faculty Biometric Muster', href: '/portal/admin/staff/attendance', icon: Fingerprint },
-          { label: 'Teacher CPD (50-Hr)', href: '/portal/admin/staff/cpd', icon: Award },
+          {
+            label: 'Faculty HRIS & Payroll',
+            href: '/portal/admin/staff',
+            icon: Briefcase,
+            badge: 'EPF/ESI',
+            searchKeywords: [
+              'staff directory',
+              'payroll',
+              'salary slips',
+              'biometric attendance',
+              'muster roll',
+              'substitution matrix',
+              '50-hr cpd',
+            ],
+          },
         ],
       },
       {
-        id: 'activities',
-        title: 'Activities & Cultural',
-        icon: Trophy,
+        id: 'safety',
+        title: 'Safety & Health',
+        icon: ShieldAlert,
         items: [
-          { label: 'House Activities', href: '/portal/admin/activities', icon: Trophy },
-          { label: 'EBSB & Bhasha Sangam', href: '/portal/admin/activities/ebsb', icon: Languages },
-          { label: 'Sahodaya & Competitions', href: '/portal/admin/activities/sahodaya', icon: Award },
+          {
+            label: 'Campus Security & Gate',
+            href: '/portal/admin/security',
+            icon: ShieldAlert,
+            searchKeywords: ['visitor pass', 'gatepass', 'pocso', 'fire drill', 'disaster'],
+          },
+          {
+            label: 'Health & Infirmary',
+            href: '/portal/admin/health',
+            icon: HeartPulse,
+            searchKeywords: ['medical', 'infirmary', 'vaccination', 'wellness', 'shwp'],
+          },
         ],
       },
       {
-        id: 'communication',
-        title: 'Communication & Reports',
+        id: 'communications',
+        title: 'Communications',
         icon: Bell,
         items: [
-          { label: 'Certificates & Documents', href: '/portal/admin/documents', icon: Award },
-          { label: 'Circulars & Notices', href: '/portal/admin/notices', icon: Bell },
-          { label: 'Communication Hub', href: '/portal/admin/communication', icon: Bell },
-          { label: 'Grievance Cell', href: '/portal/admin/helpdesk', icon: LifeBuoy },
-          { label: 'Parental Consent Desk', href: '/portal/admin/consent', icon: CheckCircle2 },
-          { label: 'Reports & Analytics', href: '/portal/admin/reports', icon: ClipboardList },
-          { label: 'School Settings', href: '/portal/admin/settings', icon: Settings },
+          {
+            label: 'Noticeboard & Circulars',
+            href: '/portal/admin/notices',
+            icon: Bell,
+            searchKeywords: ['announcements', 'circulars', 'sms broadcast'],
+          },
+          {
+            label: 'Document Dispatch',
+            href: '/portal/admin/documents',
+            icon: Award,
+            searchKeywords: ['id cards', 'certificates', 'transcripts'],
+          },
+          {
+            label: 'Grievance & Consent Desk',
+            href: '/portal/admin/helpdesk',
+            icon: LifeBuoy,
+            searchKeywords: ['tickets', 'complaints', 'parental consent'],
+          },
+          {
+            label: 'Reports & Analytics',
+            href: '/portal/admin/reports',
+            icon: ClipboardList,
+            searchKeywords: ['udise+', 'cbse audit', 'mis dashboard'],
+          },
+          {
+            label: 'School Settings',
+            href: '/portal/admin/settings',
+            icon: Settings,
+            searchKeywords: ['branding', 'sessions', 'rules'],
+          },
         ],
       },
     ],
     []
   );
 
-  // Fallback flat lists for other personas
+  // Other Role Navs
   const otherRoleSections: Record<string, NavItem[]> = useMemo(
     () => ({
       platform_super_admin: [
@@ -289,6 +437,13 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
     []
   );
 
+  const toggleSection = (sectionId: string) => {
+    setCollapsedSections((prev) => ({
+      ...prev,
+      [sectionId]: !prev[sectionId],
+    }));
+  };
+
   // Filtered links for non-admin roles
   const filteredOtherItems = useMemo(() => {
     const items = otherRoleSections[currentRole] || [];
@@ -301,16 +456,19 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
   // Filtered sections for admin role
   const filteredAdminSections = useMemo(() => {
     if (!searchQuery.trim()) return adminSections;
-    const query = searchQuery.toLowerCase();
+    const query = searchQuery.toLowerCase().trim();
 
     return adminSections
       .map((section) => ({
         ...section,
-        items: section.items.filter(
-          (item) =>
-            item.label.toLowerCase().includes(query) ||
-            section.title.toLowerCase().includes(query)
-        ),
+        items: section.items.filter((item) => {
+          const matchLabel = item.label.toLowerCase().includes(query);
+          const matchTitle = section.title.toLowerCase().includes(query);
+          const matchKeywords = item.searchKeywords?.some((kw) =>
+            kw.toLowerCase().includes(query)
+          );
+          return matchLabel || matchTitle || matchKeywords;
+        }),
       }))
       .filter((section) => section.items.length > 0);
   }, [adminSections, searchQuery]);
@@ -318,96 +476,151 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
   const isAdmin = currentRole === 'school_admin' || !currentRole;
 
   return (
-    <aside className="w-64 border-r border-slate-200 bg-white flex flex-col shrink-0 select-none">
-      {/* School Brand Header */}
-      <div className="h-16 border-b border-slate-200 px-4 flex items-center gap-3">
-        <div className="h-9 w-9 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold shrink-0 shadow-xs">
+    <aside className="w-72 border-r border-slate-200 bg-white flex flex-col shrink-0 select-none shadow-[1px_0_4px_rgba(0,0,0,0.02)] z-20">
+      {/* 1. School Brand Header */}
+      <div className="h-16 border-b border-slate-200 px-4 flex items-center gap-3 bg-white">
+        <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white font-bold shrink-0 shadow-sm ring-2 ring-blue-50">
           <GraduationCap className="h-5 w-5" />
         </div>
         <div className="flex flex-col min-w-0">
-          <span className="font-semibold text-sm text-slate-900 truncate">
+          <span className="font-bold text-xs text-slate-900 leading-snug line-clamp-2">
             {tenantName}
           </span>
-          <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">
-            {affiliation} Affiliated
-          </span>
-        </div>
-      </div>
-
-      {/* Campus Selector Pill */}
-      <div className="px-3 pt-3 pb-2">
-        <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-700 font-medium">
-          <div className="flex items-center gap-1.5 truncate">
-            <Building2 className="h-3.5 w-3.5 text-blue-600 shrink-0" />
-            <span className="truncate">Main Campus (VK-01)</span>
+          <div className="flex items-center gap-1.5 mt-0.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
+            <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+              {affiliation} Affiliated
+            </span>
           </div>
-          <ChevronDown className="h-3.5 w-3.5 text-slate-400 shrink-0" />
         </div>
       </div>
 
-      {/* Instant Filter Bar (Inspired by Blue's SidebarFilter) */}
+      {/* 2. Interactive Campus Selector */}
+      <div className="px-3 pt-3 pb-2 relative">
+        <button
+          type="button"
+          onClick={() => setIsCampusMenuOpen(!isCampusMenuOpen)}
+          className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100/90 border border-slate-200 text-xs text-slate-700 font-medium transition-colors cursor-pointer group"
+        >
+          <div className="flex items-center gap-2 truncate">
+            <span className="h-5 px-1.5 rounded bg-blue-100 text-blue-800 text-[10px] font-bold font-mono flex items-center justify-center shrink-0">
+              {campuses.find((c) => c.name === selectedCampus)?.code || 'VK-01'}
+            </span>
+            <span className="truncate text-xs font-semibold text-slate-800">
+              {selectedCampus}
+            </span>
+          </div>
+          <ChevronDown
+            className={cn(
+              'h-3.5 w-3.5 text-slate-400 group-hover:text-slate-600 transition-transform shrink-0',
+              isCampusMenuOpen && 'rotate-180'
+            )}
+          />
+        </button>
+
+        {/* Campus Dropdown Menu */}
+        {isCampusMenuOpen && (
+          <div className="absolute left-3 right-3 top-14 bg-white rounded-xl border border-slate-200 shadow-lg p-1.5 z-50 space-y-1 animate-in fade-in zoom-in-95 duration-100">
+            <div className="px-2 py-1 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+              Select Operating Campus
+            </div>
+            {campuses.map((campus) => (
+              <button
+                key={campus.id}
+                type="button"
+                onClick={() => {
+                  setSelectedCampus(campus.name);
+                  setIsCampusMenuOpen(false);
+                }}
+                className={cn(
+                  'w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-colors cursor-pointer text-left',
+                  selectedCampus === campus.name
+                    ? 'bg-blue-50 text-blue-700 font-semibold'
+                    : 'text-slate-700 hover:bg-slate-50'
+                )}
+              >
+                <div className="flex items-center gap-2 truncate">
+                  <span className="font-mono text-[10px] font-bold text-slate-500">
+                    {campus.code}
+                  </span>
+                  <span className="truncate">{campus.name}</span>
+                </div>
+                {selectedCampus === campus.name && (
+                  <Check className="h-3.5 w-3.5 text-blue-600 shrink-0" />
+                )}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* 3. Instant Search Filter Bar */}
       <div className="px-3 py-1">
         <div className="relative">
-          <Search className="h-3.5 w-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search className="h-3.5 w-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
-            placeholder="Search desks & tools..."
+            placeholder="Search desks (e.g. LOC, GPS)..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-50 hover:bg-slate-100/80 focus:bg-white text-xs pl-8 pr-7 py-1.5 rounded-lg border border-slate-200 focus:outline-hidden focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder:text-slate-400"
+            className="w-full bg-slate-50 hover:bg-slate-100/80 focus:bg-white text-xs pl-8 pr-7 py-2 rounded-xl border border-slate-200 focus:outline-hidden focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-slate-400"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
             >
-              <X className="h-3 w-3" />
+              <X className="h-3.5 w-3.5" />
             </button>
           )}
         </div>
       </div>
 
-      {/* Navigation Menu */}
-      <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-1 scrollbar-thin">
+      {/* 4. Navigation Menu */}
+      <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-1.5 scrollbar-thin">
         {isAdmin ? (
           // Admin Grouped Collapsible Accordions
           filteredAdminSections.map((section) => {
-            const isCollapsed = Boolean(collapsedSections[section.id]) && !searchQuery;
             const hasActiveItem = section.items.some(
               (item) =>
                 pathname === item.href ||
                 (item.href !== '/portal/admin' && pathname.startsWith(item.href))
             );
+            // Default open if active item exists, unless manually toggled
+            const isCollapsed =
+              collapsedSections[section.id] !== undefined
+                ? collapsedSections[section.id]
+                : !hasActiveItem && section.id !== 'overview' && !searchQuery;
 
             return (
-              <div key={section.id} className="pt-1 first:pt-0">
-                {/* Section Header (Toggleable) */}
+              <div key={section.id} className="pt-1.5 first:pt-0">
+                {/* Section Header */}
                 <button
                   type="button"
                   onClick={() => toggleSection(section.id)}
-                  className="w-full flex items-center justify-between px-2 py-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider hover:text-slate-700 transition-colors group cursor-pointer"
+                  className="w-full flex items-center justify-between px-2.5 py-1 text-[11px] font-bold text-slate-500 uppercase tracking-wider hover:text-slate-800 transition-colors group cursor-pointer"
                 >
                   <span className="flex items-center gap-1.5 truncate">
                     {section.icon && (
-                      <section.icon className="h-3 w-3 text-slate-400 group-hover:text-slate-600 shrink-0" />
+                      <section.icon className="h-3 w-3 text-slate-400 group-hover:text-blue-600 shrink-0 transition-colors" />
                     )}
                     <span className="truncate">{section.title}</span>
                   </span>
-                  <div className="flex items-center gap-1">
-                    <span className="text-[10px] font-mono text-slate-300 group-hover:text-slate-400">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] font-mono px-1 rounded bg-slate-100 text-slate-500 group-hover:bg-slate-200/80 transition-colors">
                       {section.items.length}
                     </span>
                     {isCollapsed ? (
-                      <ChevronRight className="h-3 w-3 text-slate-400" />
+                      <ChevronRight className="h-3 w-3 text-slate-400 group-hover:text-slate-600" />
                     ) : (
-                      <ChevronDown className="h-3 w-3 text-slate-400" />
+                      <ChevronDown className="h-3 w-3 text-slate-400 group-hover:text-slate-600" />
                     )}
                   </div>
                 </button>
 
                 {/* Section Items */}
                 {!isCollapsed && (
-                  <div className="space-y-0.5 mt-0.5">
+                  <div className="space-y-0.5 mt-1 pl-1">
                     {section.items.map((item) => {
                       const Icon = item.icon;
                       const isActive =
@@ -419,19 +632,35 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
                           key={item.href}
                           href={item.href}
                           className={cn(
-                            'flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors',
+                            'flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all group relative',
                             isActive
-                              ? 'bg-blue-50 text-blue-700 font-semibold'
-                              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                              ? 'bg-blue-50 text-blue-700 font-semibold border-l-[3px] border-blue-600 shadow-2xs'
+                              : 'text-slate-600 hover:bg-slate-50/90 hover:text-slate-900 border-l-[3px] border-transparent'
                           )}
                         >
-                          <Icon
-                            className={cn(
-                              'h-3.5 w-3.5 shrink-0',
-                              isActive ? 'text-blue-600' : 'text-slate-400'
-                            )}
-                          />
-                          <span className="truncate">{item.label}</span>
+                          <div className="flex items-center gap-2.5 truncate">
+                            <Icon
+                              className={cn(
+                                'h-3.5 w-3.5 shrink-0 transition-colors',
+                                isActive
+                                  ? 'text-blue-600'
+                                  : 'text-slate-400 group-hover:text-slate-600'
+                              )}
+                            />
+                            <span className="truncate">{item.label}</span>
+                          </div>
+                          {item.badge && (
+                            <span
+                              className={cn(
+                                'text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0',
+                                isActive
+                                  ? 'bg-blue-100 text-blue-700'
+                                  : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200'
+                              )}
+                            >
+                              {item.badge}
+                            </span>
+                          )}
                         </Link>
                       );
                     })}
@@ -441,7 +670,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
             );
           })
         ) : (
-          // Standard links for Student, Teacher, Parent, Platform Admin
+          // Role Desks for Teachers, Parents, Students, Platform Admins
           <div className="space-y-0.5">
             <div className="px-3 py-1 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
               {currentRole.replace(/_/g, ' ')} Desks
@@ -457,19 +686,23 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    'flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors',
+                    'flex items-center justify-between px-2.5 py-2 rounded-lg text-xs font-medium transition-all group',
                     isActive
-                      ? 'bg-blue-50 text-blue-700 font-semibold'
-                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                      ? 'bg-blue-50 text-blue-700 font-semibold border-l-[3px] border-blue-600 shadow-2xs'
+                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 border-l-[3px] border-transparent'
                   )}
                 >
-                  <Icon
-                    className={cn(
-                      'h-4 w-4 shrink-0',
-                      isActive ? 'text-blue-600' : 'text-slate-400'
-                    )}
-                  />
-                  <span className="truncate">{item.label}</span>
+                  <div className="flex items-center gap-2.5 truncate">
+                    <Icon
+                      className={cn(
+                        'h-4 w-4 shrink-0 transition-colors',
+                        isActive
+                          ? 'text-blue-600'
+                          : 'text-slate-400 group-hover:text-slate-600'
+                      )}
+                    />
+                    <span className="truncate">{item.label}</span>
+                  </div>
                 </Link>
               );
             })}
@@ -477,21 +710,32 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
         )}
       </nav>
 
-      {/* Footer / Role Indicator */}
-      <div className="p-3 border-t border-slate-200 bg-slate-50/50">
-        <div className="flex items-center justify-between text-xs">
-          <div className="flex items-center gap-2 truncate">
-            <div className="h-6 w-6 rounded-full bg-slate-200 flex items-center justify-center text-slate-700 font-bold text-[10px] uppercase shrink-0">
-              {currentRole.charAt(0)}
+      {/* 5. User Profile Footer (Protected against floating overlays) */}
+      <div className="p-3 border-t border-slate-200 bg-slate-50/70 relative z-20">
+        <div className="flex items-center justify-between gap-3 bg-white p-2 rounded-xl border border-slate-200 shadow-2xs">
+          <div className="flex items-center gap-2.5 truncate">
+            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-slate-800 to-slate-950 flex items-center justify-center text-white font-bold text-xs uppercase shrink-0 shadow-xs">
+              {currentRole ? currentRole.charAt(0) : 'A'}
             </div>
             <div className="flex flex-col min-w-0">
-              <span className="font-semibold text-slate-800 text-[11px] truncate capitalize">
-                {currentRole.replace(/_/g, ' ')}
+              <span className="font-bold text-slate-900 text-xs truncate capitalize leading-tight">
+                {currentRole ? currentRole.replace(/_/g, ' ') : 'Administrator'}
               </span>
-              <span className="text-[10px] text-slate-400 truncate">Online Session</span>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-[10px] text-slate-500 font-medium truncate">
+                  Active Session
+                </span>
+              </div>
             </div>
           </div>
-          <span className="h-2 w-2 rounded-full bg-emerald-500 shrink-0" title="System Operational" />
+          <Link
+            href="/portal/admin/settings"
+            className="p-1 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-colors"
+            title="School Settings"
+          >
+            <Settings className="h-4 w-4" />
+          </Link>
         </div>
       </div>
     </aside>

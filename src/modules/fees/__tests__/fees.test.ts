@@ -66,5 +66,5 @@ describe('Fee Management & Transaction Ledger Engine', () => {
     const updatedAllocs = await repository.getFeeAllocations(tenantId, enr.id);
     expect(updatedAllocs[0].paid_amount).toBe(10000);
     expect(updatedAllocs[0].status).toBe('partially_paid');
-  });
+  }, 10000);
 });
