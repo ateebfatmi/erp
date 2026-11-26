@@ -1,15 +1,14 @@
 import React from 'react';
-import Link from 'next/link';
 import { repository } from '@/lib/database/repository';
 import { getVerifiedAuthContext } from '@/lib/auth/session';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { CreditCard, Receipt, AlertCircle, CheckCircle2, ShieldCheck, ArrowDownRight, Scale, Percent } from 'lucide-react';
+import { CreditCard, Receipt, AlertCircle, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { recordFeePaymentAction } from '@/modules/fees/actions';
-import { DoubleEntryLedgerViewer } from '@/components/modules/accounting/ledger-viewer';
+import { UnifiedFeesHub } from '@/components/modules/fees/unified-fees-hub';
 
 export default async function FeesPage() {
   const auth = await getVerifiedAuthContext();
@@ -23,32 +22,8 @@ export default async function FeesPage() {
     0
   );
 
-  return (
+  const collectionsContent = (
     <div className="space-y-6">
-      {/* Top Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-xl border border-slate-200 shadow-xs">
-        <div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <CreditCard className="h-5 w-5 text-blue-600" />
-            Fee Management & Razorpay Payments
-          </h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Automated double-entry fee allocations, online UPI/card checkouts, and offline receipt collection.
-          </p>
-        </div>
-        <div className="flex items-center gap-3 flex-wrap">
-          <Link
-            href="/portal/admin/fees/concessions"
-            className="px-3 py-1.5 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 text-emerald-800 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors"
-          >
-            <Percent className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Concessions & Scholarships</span>
-            <ArrowDownRight className="w-3 h-3 text-emerald-600 -rotate-90" />
-          </Link>
-          <Badge variant="success">Razorpay Live Integrated</Badge>
-        </div>
-      </div>
-
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card>
@@ -100,67 +75,76 @@ export default async function FeesPage() {
         </Card>
       </div>
 
-      {/* Main Grid: Dues Ledger + Record Fee Form */}
+      {/* Main Grid: Allocations & Counter */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Outstanding Dues & Fee Allocations Table (2 spans) */}
-        <div className="lg:col-span-2 space-y-6">
+        {/* Left Column: Student Fee Allocations */}
+        <div className="lg:col-span-2 space-y-4">
           <Card>
-            <CardHeader className="p-4 border-b border-slate-200">
-              <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 text-amber-600" />
-                Student Fee Ledger Dues
-              </CardTitle>
+            <CardHeader className="pb-3 border-b border-slate-100 flex flex-row items-center justify-between">
+              <div>
+                <CardTitle className="text-sm font-bold text-slate-800">
+                  Student Fee Ledger Allocations
+                </CardTitle>
+                <p className="text-xs text-slate-500">
+                  Quarterly tuition, transport, and lab fee dues per enrolled student.
+                </p>
+              </div>
+              <Badge variant="outline">
+                {feeAllocations.length} Active Accounts
+              </Badge>
             </CardHeader>
             <CardContent className="p-0">
               <div className="overflow-x-auto">
                 <table className="w-full text-xs text-left">
-                  <thead className="bg-slate-50 border-b border-slate-200 text-slate-500">
+                  <thead className="bg-slate-50 text-slate-500 border-b border-slate-100">
                     <tr>
-                      <th className="py-2.5 px-3">Student</th>
-                      <th className="py-2.5 px-3">Fee Title</th>
-                      <th className="py-2.5 px-3">Due Date</th>
-                      <th className="py-2.5 px-3">Due Amount</th>
-                      <th className="py-2.5 px-3">Paid Amount</th>
-                      <th className="py-2.5 px-3">Status</th>
+                      <th className="px-4 py-2.5 font-medium">Student / Admission No</th>
+                      <th className="px-4 py-2.5 font-medium">Structure</th>
+                      <th className="px-4 py-2.5 font-medium">Due Amount</th>
+                      <th className="px-4 py-2.5 font-medium">Due Date</th>
+                      <th className="px-4 py-2.5 font-medium">Status</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {feeAllocations.map((alloc) => {
-                      const student = enrollments.find((e) => e.id === alloc.enrollment_id);
+                      const enrollment = enrollments.find((e) => e.student_id === alloc.student_id);
+                      const balance = alloc.due_amount - alloc.discount_amount - alloc.paid_amount;
                       return (
-                        <tr key={alloc.id} className="hover:bg-slate-50/80 transition-colors">
-                          <td className="py-3 px-3">
-                            <div className="font-semibold text-slate-900">
-                              {student?.student?.full_name || 'Student'}
+                        <tr key={alloc.id} className="hover:bg-slate-50/50">
+                          <td className="px-4 py-3">
+                            <div className="font-semibold text-slate-800">
+                              {alloc.student_id}
                             </div>
-                            <div className="text-[10px] text-slate-400 font-mono">
-                              {student?.student?.admission_number}
+                            <div className="text-[11px] text-slate-400">
+                              Class: {enrollment?.class_id || 'Class 10-A'}
                             </div>
                           </td>
-                          <td className="py-3 px-3 font-medium text-slate-700">
-                            {alloc.title}
+                          <td className="px-4 py-3 text-slate-600">
+                            {alloc.fee_structure_id}
                           </td>
-                          <td className="py-3 px-3 text-slate-500">
+                          <td className="px-4 py-3">
+                            <span className="font-bold text-slate-900">
+                              {formatCurrency(balance)}
+                            </span>
+                            {alloc.discount_amount > 0 && (
+                              <span className="text-[10px] text-emerald-600 block">
+                                (Saved {formatCurrency(alloc.discount_amount)})
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3 text-slate-500">
                             {formatDate(alloc.due_date)}
                           </td>
-                          <td className="py-3 px-3 font-bold text-slate-900">
-                            {formatCurrency(alloc.due_amount)}
-                          </td>
-                          <td className="py-3 px-3 font-medium text-emerald-600">
-                            {formatCurrency(alloc.paid_amount)}
-                          </td>
-                          <td className="py-3 px-3">
-                            <Badge
-                              variant={
-                                alloc.status === 'paid'
-                                  ? 'success'
-                                  : alloc.status === 'partially_paid'
-                                  ? 'warning'
-                                  : 'destructive'
-                              }
-                            >
-                              {alloc.status.replace('_', ' ')}
-                            </Badge>
+                          <td className="px-4 py-3">
+                            {alloc.status === 'paid' && (
+                              <Badge variant="success">Fully Settled</Badge>
+                            )}
+                            {alloc.status === 'partial' && (
+                              <Badge variant="warning">Partially Paid</Badge>
+                            )}
+                            {alloc.status === 'unpaid' && (
+                              <Badge variant="destructive">Outstanding</Badge>
+                            )}
                           </td>
                         </tr>
                       );
@@ -171,47 +155,56 @@ export default async function FeesPage() {
             </CardContent>
           </Card>
 
-          {/* Fee Transactions Log */}
+          {/* Recent Fee Transactions */}
           <Card>
-            <CardHeader className="p-4 border-b border-slate-200">
-              <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                <Receipt className="h-4 w-4 text-blue-600" />
-                Immutable Transaction Receipts
+            <CardHeader className="pb-3 border-b border-slate-100">
+              <CardTitle className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                <Receipt className="h-4 w-4 text-emerald-600" />
+                Audited Collection Receipts
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
               <div className="overflow-x-auto">
                 <table className="w-full text-xs text-left">
-                  <thead className="bg-slate-50 border-b border-slate-200 text-slate-500">
+                  <thead className="bg-slate-50 text-slate-500 border-b border-slate-100">
                     <tr>
-                      <th className="py-2.5 px-3">Receipt No</th>
-                      <th className="py-2.5 px-3">Student</th>
-                      <th className="py-2.5 px-3">Payment Method</th>
-                      <th className="py-2.5 px-3">Amount</th>
-                      <th className="py-2.5 px-3">Status</th>
-                      <th className="py-2.5 px-3">Timestamp</th>
+                      <th className="px-4 py-2.5 font-medium">Receipt No</th>
+                      <th className="px-4 py-2.5 font-medium">Date</th>
+                      <th className="px-4 py-2.5 font-medium">Payment Mode</th>
+                      <th className="px-4 py-2.5 font-medium">Reference ID</th>
+                      <th className="px-4 py-2.5 font-medium">Amount</th>
+                      <th className="px-4 py-2.5 font-medium text-right">Invoice</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {transactions.map((tx) => (
-                      <tr key={tx.id} className="hover:bg-slate-50/80 transition-colors">
-                        <td className="py-3 px-3 font-mono font-medium text-blue-600">
+                      <tr key={tx.id} className="hover:bg-slate-50/50">
+                        <td className="px-4 py-3 font-mono font-semibold text-slate-900">
                           {tx.receipt_number}
                         </td>
-                        <td className="py-3 px-3 font-semibold text-slate-900">
-                          {tx.student_name}
+                        <td className="px-4 py-3 text-slate-500">
+                          {formatDate(tx.created_at)}
                         </td>
-                        <td className="py-3 px-3 uppercase text-[11px] text-slate-600">
-                          {tx.payment_method}
+                        <td className="px-4 py-3">
+                          <span className="capitalize px-2 py-0.5 bg-slate-100 text-slate-700 rounded text-[11px] font-medium">
+                            {tx.payment_method.replace('_', ' ')}
+                          </span>
                         </td>
-                        <td className="py-3 px-3 font-bold text-slate-900">
+                        <td className="px-4 py-3 font-mono text-[11px] text-slate-500">
+                          {tx.transaction_reference || 'N/A'}
+                        </td>
+                        <td className="px-4 py-3 font-bold text-emerald-600">
                           {formatCurrency(tx.total_amount)}
                         </td>
-                        <td className="py-3 px-3">
-                          <Badge variant="success">Completed</Badge>
-                        </td>
-                        <td className="py-3 px-3 text-slate-500">
-                          {formatDate(tx.recorded_at)}
+                        <td className="px-4 py-3 text-right">
+                          <a
+                            href={`/api/documents/fee-receipt/${tx.id}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-blue-600 hover:underline font-medium text-[11px]"
+                          >
+                            PDF Receipt
+                          </a>
                         </td>
                       </tr>
                     ))}
@@ -222,80 +215,63 @@ export default async function FeesPage() {
           </Card>
         </div>
 
-        {/* Record Fee Payment Form */}
-        <div>
-          <Card>
-            <CardHeader className="border-b border-slate-200">
-              <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                <Receipt className="h-4 w-4 text-blue-600" />
-                Collect Fee / Offline Counter
+        {/* Right Column: Offline Cashier Desk Form */}
+        <div className="space-y-4">
+          <Card className="border-blue-100 bg-blue-50/20">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                <CreditCard className="h-4 w-4 text-blue-600" />
+                Offline Collection & Cashier Entry
               </CardTitle>
               <p className="text-xs text-slate-500">
-                Immediately updates ledger and generates an official fee receipt.
+                Record in-person cash, cheque, or POS card collections at the campus counter.
               </p>
             </CardHeader>
-            <CardContent className="pt-4">
-              <form
-                action={async (formData) => {
-                  'use server';
-                  const enrollmentId = formData.get('enrollmentId') as string;
-                  const amount = Number(formData.get('amount'));
-                  const paymentMethod = formData.get('paymentMethod') as any;
-                  const referenceNumber = formData.get('referenceNumber') as string;
-
-                  // Find pending allocations
-                  const allocs = await repository.getFeeAllocations(auth.tenantId, enrollmentId);
-                  const unpaid = allocs.filter((a) => a.status !== 'paid');
-
-                  await recordFeePaymentAction({
-                    enrollmentId,
-                    allocationIds: unpaid.map((a) => a.id),
-                    amount,
-                    paymentMethod,
-                    referenceNumber,
-                  });
-                }}
-                className="space-y-3"
-              >
+            <CardContent>
+              <form action={recordFeePaymentAction} className="space-y-3">
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-1">
-                    Select Student *
+                    Select Fee Allocation
                   </label>
                   <select
-                    name="enrollmentId"
+                    name="allocationId"
                     required
-                    className="w-full text-xs h-9 px-3 border border-slate-200 rounded-lg bg-white text-slate-900"
+                    className="w-full text-xs rounded-md border border-slate-300 p-2 bg-white"
                   >
-                    {enrollments.map((enr) => (
-                      <option key={enr.id} value={enr.id}>
-                        {enr.student?.full_name} ({enr.student?.admission_number} - {enr.class_name})
-                      </option>
-                    ))}
+                    <option value="">-- Choose Pending Account --</option>
+                    {feeAllocations
+                      .filter((a) => a.status !== 'paid')
+                      .map((a) => (
+                        <option key={a.id} value={a.id}>
+                          {a.student_id} — Bal: {formatCurrency(a.due_amount - a.discount_amount - a.paid_amount)}
+                        </option>
+                      ))}
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-1">
-                    Payment Amount (₹) *
+                    Amount Received (₹)
                   </label>
                   <Input
                     name="amount"
                     type="number"
                     step="1"
+                    min="1"
+                    placeholder="Enter collected amount"
                     required
-                    defaultValue="19500"
-                    className="text-xs font-bold"
+                    className="text-xs"
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-1">
-                    Payment Method *
+                    Payment Instrument / Channel
                   </label>
                   <select
                     name="paymentMethod"
                     required
-                    className="w-full text-xs h-9 px-3 border border-slate-200 rounded-lg bg-white text-slate-900"
+                    className="w-full text-xs rounded-md border border-slate-300 p-2 bg-white"
                   >
                     <option value="upi">UPI / QR Code</option>
                     <option value="razorpay">Razorpay Checkout</option>
@@ -327,11 +303,8 @@ export default async function FeesPage() {
           </Card>
         </div>
       </div>
-
-      {/* Double-Entry School General Ledger & Trial Balance */}
-      <div className="pt-4">
-        <DoubleEntryLedgerViewer />
-      </div>
     </div>
   );
+
+  return <UnifiedFeesHub initialTab="collections" collectionsContent={collectionsContent} />;
 }

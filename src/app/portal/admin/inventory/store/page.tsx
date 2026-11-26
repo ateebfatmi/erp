@@ -1,15 +1,6 @@
-import { Metadata } from 'next';
-import { SchoolStoreManager } from '@/components/modules/inventory/school-store-manager';
+import React from 'react';
+import { UnifiedInventoryHub } from '@/components/modules/inventory/unified-inventory-hub';
 
-export const metadata: Metadata = {
-  title: 'Campus Bookstore & Uniform Inventory Desk | VidyaOS Admin',
-  description: 'Manage NCERT textbook packages, uniform sets, laboratory kits and track student counter distributions.',
-};
-
-export default function AdminSchoolStorePage() {
-  return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <SchoolStoreManager viewMode="admin" />
-    </div>
-  );
+export default function AdminStorePage() {
+  return <UnifiedInventoryHub initialTab="store" />;
 }

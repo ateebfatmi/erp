@@ -1,10 +1,6 @@
 import React from 'react';
-import { TransportTripsManager } from '@/components/modules/transport/transport-trips-manager';
+import { UnifiedTransportHub } from '@/components/modules/transport/unified-transport-hub';
 
 export default function AdminTransportTripsPage() {
-  return (
-    <div className="space-y-6">
-      <TransportTripsManager />
-    </div>
-  );
+  return <UnifiedTransportHub initialTab="trips" />;
 }
