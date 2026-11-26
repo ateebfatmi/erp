@@ -168,6 +168,16 @@ export default async function ParentDashboardPage() {
               <CardTitle className="text-sm font-semibold">Guardian Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
+              <Link href="/portal/parent/homework" className="block">
+                <Button variant="outline" size="sm" className="w-full justify-start text-xs gap-2">
+                  <BookOpen className="h-4 w-4 text-amber-600" /> Ward Homework & Daily Tasks
+                </Button>
+              </Link>
+              <Link href="/portal/parent/certificates" className="block">
+                <Button variant="outline" size="sm" className="w-full justify-start text-xs gap-2">
+                  <ShieldCheck className="h-4 w-4 text-purple-600" /> Digital Certificates & Bonafide
+                </Button>
+              </Link>
               <Link href="/portal/parent/fees" className="block">
                 <Button variant="outline" size="sm" className="w-full justify-start text-xs gap-2">
                   <CreditCard className="h-4 w-4 text-emerald-600" /> View Invoices & Receipts

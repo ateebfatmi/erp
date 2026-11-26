@@ -124,6 +124,11 @@ export default function StudentDashboardPage() {
                   <FileText className="h-4 w-4 text-amber-600" /> Pending Homework Tasks
                 </Button>
               </Link>
+              <Link href="/portal/student/certificates" className="block">
+                <Button variant="outline" size="sm" className="w-full justify-start text-xs gap-2">
+                  <Award className="h-4 w-4 text-purple-600" /> Digital Certificates & Bonafide
+                </Button>
+              </Link>
               <Link href="/portal/student/results" className="block">
                 <Button variant="outline" size="sm" className="w-full justify-start text-xs gap-2">
                   <Award className="h-4 w-4 text-blue-600" /> CBSE Mid-Term Report Card

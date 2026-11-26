@@ -57,6 +57,7 @@ interface SidebarProps {
   currentRole: string;
   tenantName: string;
   affiliation: string;
+  onNavigate?: () => void;
 }
 
 interface NavItem {
@@ -74,7 +75,7 @@ interface NavSection {
   items: NavItem[];
 }
 
-export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) {
+export function Sidebar({ currentRole, tenantName, affiliation, onNavigate }: SidebarProps) {
   const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState('');
   const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
@@ -437,6 +438,8 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
       ],
       parent: [
         { label: 'Parent Dashboard', href: '/portal/parent', icon: LayoutDashboard },
+        { label: 'Homework & Tasks', href: '/portal/parent/homework', icon: FileText },
+        { label: 'Certificates & Bonafide', href: '/portal/parent/certificates', icon: Award },
         { label: 'Fee Payments', href: '/portal/parent/fees', icon: CreditCard },
         { label: 'Attendance History', href: '/portal/parent/attendance', icon: CalendarCheck },
         { label: 'Leave Applications', href: '/portal/parent/leave', icon: Calendar },
@@ -457,6 +460,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
         { label: 'Student Dashboard', href: '/portal/student', icon: LayoutDashboard },
         { label: 'My Timetable', href: '/portal/student/timetable', icon: Calendar },
         { label: 'Assignments & CBT', href: '/portal/student/homework', icon: FileText },
+        { label: 'Certificates & Bonafide', href: '/portal/student/certificates', icon: Award },
         { label: 'Exam Results', href: '/portal/student/results', icon: BookOpen },
         { label: 'Exam Admit Card', href: '/portal/student/admit-card', icon: FileText },
         { label: 'Bookstore & Uniform Kits', href: '/portal/parent/store', icon: ShoppingBag },
@@ -518,7 +522,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
   const isAdmin = currentRole === 'school_admin' || !currentRole;
 
   return (
-    <aside className="w-72 border-r border-slate-200 bg-white flex flex-col shrink-0 select-none shadow-[1px_0_4px_rgba(0,0,0,0.02)] z-20">
+    <aside className="w-72 h-full border-r border-slate-200 bg-white flex flex-col shrink-0 select-none shadow-[1px_0_4px_rgba(0,0,0,0.02)] z-20">
       {/* 1. School Brand Header */}
       <div className="h-16 border-b border-slate-200 px-4 flex items-center gap-3 bg-white">
         <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white font-bold shrink-0 shadow-sm ring-2 ring-blue-50">
@@ -673,6 +677,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
                         <Link
                           key={item.href}
                           href={item.href}
+                          onClick={() => onNavigate?.()}
                           className={cn(
                             'flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all group relative',
                             isActive
@@ -727,6 +732,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
                 <Link
                   key={item.href}
                   href={item.href}
+                  onClick={() => onNavigate?.()}
                   className={cn(
                     'flex items-center justify-between px-2.5 py-2 rounded-lg text-xs font-medium transition-all group',
                     isActive
@@ -773,6 +779,7 @@ export function Sidebar({ currentRole, tenantName, affiliation }: SidebarProps) 
           </div>
           <Link
             href="/portal/admin/settings"
+            onClick={() => onNavigate?.()}
             className="p-1 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-colors"
             title="School Settings"
           >

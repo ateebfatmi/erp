@@ -2,15 +2,16 @@
 
 import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Search, Bell, CalendarDays, ShieldCheck, Sparkles } from 'lucide-react';
+import { Search, Bell, CalendarDays, ShieldCheck, Sparkles, Menu } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface HeaderProps {
   currentRole: string;
   userName: string;
+  onToggleMobileSidebar?: () => void;
 }
 
-export function Header({ currentRole, userName }: HeaderProps) {
+export function Header({ currentRole, userName, onToggleMobileSidebar }: HeaderProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -29,19 +30,30 @@ export function Header({ currentRole, userName }: HeaderProps) {
   };
 
   return (
-    <header className="h-16 border-b border-slate-200 bg-white px-6 flex items-center justify-between gap-4 sticky top-0 z-30 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
-      {/* Global Quick Search Bar */}
-      <div className="flex-1 max-w-md relative">
-        <Search className="h-4 w-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-        <input
-          type="text"
-          placeholder="Search students, staff, indents, fee ledgers..."
-          className="w-full pl-9 pr-14 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-blue-100 focus:border-blue-500 focus:bg-white transition-all shadow-2xs"
-        />
-        <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none hidden sm:flex items-center gap-0.5">
-          <kbd className="text-[10px] font-mono bg-white border border-slate-200 px-1.5 py-0.5 rounded text-slate-400 shadow-2xs">
-            ⌘K
-          </kbd>
+    <header className="h-16 border-b border-slate-200 bg-white px-4 sm:px-6 flex items-center justify-between gap-3 sm:gap-4 sticky top-0 z-30 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+      {/* Mobile Hamburger & Quick Search Bar */}
+      <div className="flex items-center gap-2 flex-1 max-w-md">
+        <button
+          type="button"
+          onClick={onToggleMobileSidebar}
+          className="lg:hidden p-2 -ml-1 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer"
+          aria-label="Toggle navigation menu"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+
+        <div className="flex-1 relative">
+          <Search className="h-4 w-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <input
+            type="text"
+            placeholder="Search desks, students..."
+            className="w-full pl-9 pr-10 sm:pr-14 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-blue-100 focus:border-blue-500 focus:bg-white transition-all shadow-2xs"
+          />
+          <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none hidden sm:flex items-center gap-0.5">
+            <kbd className="text-[10px] font-mono bg-white border border-slate-200 px-1.5 py-0.5 rounded text-slate-400 shadow-2xs">
+              ⌘K
+            </kbd>
+          </div>
         </div>
       </div>
 
